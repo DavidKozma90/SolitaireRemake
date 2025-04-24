@@ -1,0 +1,2 @@
+# SolitaireRemake
+Solitaire game
