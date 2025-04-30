@@ -2,17 +2,27 @@
 
 Solitaire::Card::Card(Rank rank, Suit suit) : m_Rank(rank), m_Suit(suit) {}
 
-Solitaire::Rank Solitaire::Card::getRank() const 
+Solitaire::Card::Card(Rank rank, Suit suit, Vector2 offset) : Card(rank, suit)
+{
+    this->SetCoords(offset);
+}
+
+Solitaire::Card::Card(Rank rank, Suit suit, Texture2D& texture, Vector2 offset) : Card(rank, suit)
+{
+    this->Render(texture, offset);
+}
+
+Solitaire::Rank Solitaire::Card::GetRank() const 
 { 
     return m_Rank; 
 }
 
-Solitaire::Suit Solitaire::Card::getSuit() const 
+Solitaire::Suit Solitaire::Card::GetSuit() const 
 { 
     return m_Suit; 
 }
 
-void Solitaire::Card::DrawCard(Texture2D& texture, int pixelOffsetX, int pixelOffsetY) const
+void Solitaire::Card::Render(Texture2D& texture, Vector2 offset)
 {
     const int cardOffsetX = static_cast<int>(m_Rank) - 1;
     const int cardOffsetY = static_cast<int>(m_Suit);
@@ -25,13 +35,34 @@ void Solitaire::Card::DrawCard(Texture2D& texture, int pixelOffsetX, int pixelOf
         Constants::SPRITE_HEIGHT
     };
 
-    const Rectangle dest = 
-    {
-        pixelOffsetX, 
-        pixelOffsetY, 
-        Constants::SPRITE_WIDTH,
-        Constants::SPRITE_HEIGHT
-    };
+    this->SetCoords(offset);
         
-    DrawTexturePro(texture, source, dest, {0, 0}, 0.0f, WHITE);
+    DrawTexturePro(texture, source, m_DestinationRectangle, {0, 0}, 0.0f, WHITE);
+}
+
+Rectangle Solitaire::Card::GetCoords()
+{ 
+    return m_DestinationRectangle; 
+}
+
+void Solitaire::Card::PrintCardCoordinates() const
+{
+    std::cout << "Card (x0, y0, width, height): " << m_DestinationRectangle.x << ", " << m_DestinationRectangle.y << ", " 
+              << m_DestinationRectangle.width << ", " << m_DestinationRectangle.height << std::endl;
+}
+
+void Solitaire::Card::SetCardCoordX(int x)
+{
+    m_DestinationRectangle.x = x;
+}
+
+void Solitaire::Card::SetCardCoordY(int y)
+{
+    m_DestinationRectangle.y = y;
+}
+
+void Solitaire::Card::SetCoords(Vector2 offset)
+{
+    m_DestinationRectangle.x = offset.x;
+    m_DestinationRectangle.y = offset.y;
 }
