@@ -1,7 +1,9 @@
 #pragma once
 
 #include <raylib.h>
+#include <iostream>
 #include "Constants.h"
+
 
 namespace Solitaire
 {
@@ -11,14 +13,25 @@ namespace Solitaire
     class Card
     {
     public:
-        Card() = default;
+        Card() = delete; // TODO: for now...
+        ~Card() = default;
         Card(Rank rank, Suit suit);
-        Rank getRank() const;
-        Suit getSuit() const;
+        Card(Rank rank, Suit suit, Vector2 offset);
+        Card(Rank rank, Suit suit, Texture2D& texture, Vector2 offset);
 
-        void DrawCard(Texture2D& texture, int pixelOffsetX, int pixelOffsetY) const;
+        Rank GetRank() const;
+        Suit GetSuit() const;
+
+        void Render(Texture2D& texture, Vector2 offset);
+        Rectangle GetCoords();
+        void PrintCardCoordinates() const;
+        void SetCardCoordX(int x);
+        void SetCardCoordY(int y);
+        void SetCoords(Vector2 offset);
+
     private:
         Rank m_Rank = Rank::Ace;
         Suit m_Suit = Suit::Hearts;
+        Rectangle m_DestinationRectangle = { 0, 0, Constants::RENDERED_SPRITE_WIDTH, Constants::RENDERED_SPRITE_HEIGHT };
     };
 }

@@ -1,89 +1,102 @@
 #include "raylib.h"
 #include <iostream>
 #include "Card.h"
+#include "Constants.h"
+#include <vector>
 
 using namespace Solitaire;
 
-const int x0 = 2;
-const int y0 = 3;
-const float spriteWidth = 57.0f;
-const float spriteHeight = 79.0f;
-const int spriteOffsetX = 59;
-const int spriteOffsetY = 81;
-
 Texture2D texture;
 
-void testDraw()
+void placeCardAnywhere(Card& card, Vector2& offset)
 {
-    int offsetX = 0;
-    int offsetY = 0;
+    const Vector2 mousePos = GetMousePosition();
+    static bool isCardGrabbed = false;
 
-    if(IsKeyPressed(KEY_RIGHT))
+    if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
     {
-        if(offsetX < 12)
-        {
-            offsetX++;
-        }   
-    }
-    else if(IsKeyPressed(KEY_LEFT))
-    {
-        if(offsetX > 0)
-        {
-            offsetX--;
+        if((mousePos.x > card.GetCoords().x) && (mousePos.x < card.GetCoords().x + card.GetCoords().width) &&
+           (mousePos.y > card.GetCoords().y) && (mousePos.y < card.GetCoords().y + card.GetCoords().height))
+        {            
+            isCardGrabbed = true;
         }
     }
-    else if(IsKeyPressed(KEY_UP))
+    else
     {
-        if(offsetY > 0)
-        {
-            offsetY--;
-        }
+        isCardGrabbed = false;
     }
-    else if(IsKeyPressed(KEY_DOWN))
+
+    if(isCardGrabbed)
     {
-        if(offsetY < 4)
-        {
-            offsetY++;
+        offset = {mousePos.x - (card.GetCoords().width / 2), mousePos.y - (card.GetCoords().height / 2)};
+    }
+}
+
+
+void placeCardInsideTarget(Card& card, Vector2& offset, Rectangle& rectangle)
+{
+    const Vector2 mousePos = GetMousePosition();
+    static bool isCardGrabbed = false;
+    static Vector2 saveOriginal = {0,0};
+
+    if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+    {
+        if((mousePos.x >= card.GetCoords().x) && (mousePos.x < (card.GetCoords().x + card.GetCoords().width)) &&
+           (mousePos.y >= card.GetCoords().y) && (mousePos.y < (card.GetCoords().y + card.GetCoords().height)))
+        {            
+            isCardGrabbed = true;
         }
     }
 
-    Rectangle source = {x0 + (offsetX * spriteOffsetX), y0 + (offsetY * spriteOffsetY), spriteWidth, spriteHeight};
-    Rectangle dest = {x0 + (offsetX * spriteOffsetX), y0 + (offsetY * spriteOffsetY), spriteWidth, spriteHeight};
+    if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
+    {   
+        if(CheckCollisionRecs(card.GetCoords(), rectangle))
+        {
+            offset = {rectangle.x, rectangle.y};
+        }
+        else
+        {
+            offset = {0, 0};
+        }
+        isCardGrabbed = false;
+    }
 
-    DrawTexturePro(texture, source, dest, {0, 0}, 0.0f, WHITE);
+    if(isCardGrabbed)
+    {
+        offset = {mousePos.x - (card.GetCoords().width / 2), mousePos.y - (card.GetCoords().height / 2)};
+    }
 }
 
 int main()
 {
-    Card c1(Rank::Ace, Suit::Hearts);
-    Card c2(Rank::Two, Suit::Diamonds);
-    Card c3(Rank::Three, Suit::Clubs);
-    Card c4(Rank::Four, Suit::Spades);
-    Card c5;
-
-    InitWindow(800, 600, "Raylib Example");
+    InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Raylib Example");
 	SetTargetFPS(60);
 
     texture = LoadTexture("resources/sprites/spriteSheet.png");
+
+    Card card(Rank::Ace, Suit::Hearts);
+    Vector2 offset = {0,0};
+    Rectangle rectangleTarget = {(Constants::WINDOW_WIDTH / 2) - (Constants::RENDERED_SPRITE_WIDTH / 2), 
+                                 (Constants::WINDOW_HEIGHT / 2) - (Constants::RENDERED_SPRITE_HEIGHT / 2), 
+                                  Constants::RENDERED_SPRITE_WIDTH, 
+                                  Constants::RENDERED_SPRITE_HEIGHT};
+
     while (!WindowShouldClose())
     {
         BeginDrawing();
 		ClearBackground(DARKGREEN);
 
-        std::cout << GetMouseX() << " " << GetMouseY() << std::endl;
+        DrawRectangleLines(rectangleTarget.x, rectangleTarget.y, rectangleTarget.width, rectangleTarget.height, WHITE);
+                           
+        //std::cout << GetMouseX() << " " << GetMouseY() << std::endl;
 
-        int cardOffsetX = 0;
-    
-        c1.DrawCard(texture, (cardOffsetX * Constants::SPRITE_OFFSET_X), 0);
-        cardOffsetX++;
-        c2.DrawCard(texture, (cardOffsetX * Constants::SPRITE_OFFSET_X), 0);
-        cardOffsetX++;
-        c3.DrawCard(texture, (cardOffsetX * Constants::SPRITE_OFFSET_X), 0);
-        cardOffsetX++;
-        c4.DrawCard(texture, (cardOffsetX * Constants::SPRITE_OFFSET_X), 0);
-        cardOffsetX++;
-        c5.DrawCard(texture, (cardOffsetX * Constants::SPRITE_OFFSET_X), 0);
-      
+        card.Render(texture, offset);
+        //placeCardAnywhere(card, offset);
+        card.SetCoords(offset);
+        placeCardInsideTarget(card, offset, rectangleTarget);
+
+
+        //std::cout << "Offset: " << offset.x << ", " << offset.y << std::endl;
 
 		EndDrawing();
     }
