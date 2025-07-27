@@ -1,8 +1,9 @@
-#include "raylib.h"
+#include <vector>
 #include <iostream>
+#include "raylib.h"
 #include "Card.h"
 #include "Constants.h"
-#include <vector>
+#include "Renderer.h"
 
 using namespace Solitaire;
 
@@ -15,8 +16,8 @@ void placeCardAnywhere(Card& card, Vector2& offset)
 
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
     {
-        if((mousePos.x > card.GetCoords().x) && (mousePos.x < card.GetCoords().x + card.GetCoords().width) &&
-           (mousePos.y > card.GetCoords().y) && (mousePos.y < card.GetCoords().y + card.GetCoords().height))
+        if((mousePos.x > card.GetCoords().GetX()) && (mousePos.x < card.GetCoords().GetX() + card.GetCoords().GetWidth()) &&
+           (mousePos.y > card.GetCoords().GetY()) && (mousePos.y < card.GetCoords().GetY() + card.GetCoords().GetHeight()))
         {            
             isCardGrabbed = true;
         }
@@ -28,7 +29,7 @@ void placeCardAnywhere(Card& card, Vector2& offset)
 
     if(isCardGrabbed)
     {
-        offset = {mousePos.x - (card.GetCoords().width / 2), mousePos.y - (card.GetCoords().height / 2)};
+        offset = {mousePos.x - (card.GetCoords().GetWidth() / 2), mousePos.y - (card.GetCoords().GetHeight() / 2)};
     }
 }
 
@@ -41,8 +42,8 @@ void placeCardInsideTarget(Card& card, Vector2& offset, Rectangle& rectangle)
 
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
     {
-        if((mousePos.x >= card.GetCoords().x) && (mousePos.x < (card.GetCoords().x + card.GetCoords().width)) &&
-           (mousePos.y >= card.GetCoords().y) && (mousePos.y < (card.GetCoords().y + card.GetCoords().height)))
+        if((mousePos.x >= card.GetCoords().GetX()) && (mousePos.x < (card.GetCoords().GetX() + card.GetCoords().GetWidth())) &&
+           (mousePos.y >= card.GetCoords().GetY()) && (mousePos.y < (card.GetCoords().GetY() + card.GetCoords().GetHeight())))
         {            
             isCardGrabbed = true;
         }
@@ -50,7 +51,7 @@ void placeCardInsideTarget(Card& card, Vector2& offset, Rectangle& rectangle)
 
     if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
     {   
-        if(CheckCollisionRecs(card.GetCoords(), rectangle))
+        if(CheckCollisionRecs(card.GetCoords().GetCardDestinationCoordinates(), rectangle))
         {
             offset = {rectangle.x, rectangle.y};
         }
@@ -63,19 +64,22 @@ void placeCardInsideTarget(Card& card, Vector2& offset, Rectangle& rectangle)
 
     if(isCardGrabbed)
     {
-        offset = {mousePos.x - (card.GetCoords().width / 2), mousePos.y - (card.GetCoords().height / 2)};
+        offset = {mousePos.x - (card.GetCoords().GetWidth() / 2), mousePos.y - (card.GetCoords().GetHeight() / 2)};
     }
 }
 
 int main()
 {
+    Renderer renderer;
+
     InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Raylib Example");
 	SetTargetFPS(60);
 
-    texture = LoadTexture("resources/sprites/spriteSheet.png");
+    renderer.Initialize();
 
     Card card(Rank::Ace, Suit::Hearts);
     Vector2 offset = {0,0};
+    const IVector2 ivectorOffset = ToIVector2(offset);
     Rectangle rectangleTarget = {(Constants::WINDOW_WIDTH / 2) - (Constants::RENDERED_SPRITE_WIDTH / 2), 
                                  (Constants::WINDOW_HEIGHT / 2) - (Constants::RENDERED_SPRITE_HEIGHT / 2), 
                                   Constants::RENDERED_SPRITE_WIDTH, 
@@ -91,10 +95,10 @@ int main()
         //std::cout << GetMouseX() << " " << GetMouseY() << std::endl;
 
         //placeCardAnywhere(card, offset);
-        card.SetCoords(offset);
+        card.GetCoords().SetCardDestinationCoordinates(ToIVector2(offset));
         placeCardInsideTarget(card, offset, rectangleTarget);
         
-        card.Render(texture);
+        renderer.RenderCard(card);
 
         //std::cout << "Offset: " << offset.x << ", " << offset.y << std::endl;
 
