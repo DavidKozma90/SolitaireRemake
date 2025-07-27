@@ -17,12 +17,11 @@ namespace Solitaire
         ~Card() = default;
         Card(Rank rank, Suit suit);
         Card(Rank rank, Suit suit, Vector2 offset);
-        Card(Rank rank, Suit suit, Texture2D& texture, Vector2 offset);
 
         Rank GetRank() const;
         Suit GetSuit() const;
 
-        void Render(Texture2D& texture, Vector2 offset);
+        void Render(Texture2D& texture);
         Rectangle GetCoords();
         void PrintCardCoordinates() const;
         void SetCardCoordX(int x);
@@ -33,5 +32,6 @@ namespace Solitaire
         Rank m_Rank = Rank::Ace;
         Suit m_Suit = Suit::Hearts;
         Rectangle m_DestinationRectangle = { 0, 0, Constants::RENDERED_SPRITE_WIDTH, Constants::RENDERED_SPRITE_HEIGHT };
+        Rectangle m_SourceRectangle = {0, 0, 0, 0};
     };
 }
