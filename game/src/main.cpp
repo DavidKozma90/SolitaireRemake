@@ -90,11 +90,11 @@ int main()
                            
         //std::cout << GetMouseX() << " " << GetMouseY() << std::endl;
 
-        card.Render(texture, offset);
         //placeCardAnywhere(card, offset);
         card.SetCoords(offset);
         placeCardInsideTarget(card, offset, rectangleTarget);
-
+        
+        card.Render(texture);
 
         //std::cout << "Offset: " << offset.x << ", " << offset.y << std::endl;
 

@@ -41,3 +41,7 @@ bool Solitaire::Deck::isEmpty() const
 {
     return m_Cards.empty();
 }
+
+void Solitaire::Deck::renderDeck(Texture2D &texture)
+{
+}

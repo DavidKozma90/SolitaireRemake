@@ -20,6 +20,8 @@ namespace Solitaire
         Card drawCard();
         bool isEmpty() const;
 
+        void renderDeck(Texture2D& texture);
+
     private:
         std::vector<Card> m_Cards;
     };

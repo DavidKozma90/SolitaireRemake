@@ -1,15 +1,22 @@
 #include "Card.h"
 
-Solitaire::Card::Card(Rank rank, Suit suit) : m_Rank(rank), m_Suit(suit) {}
+Solitaire::Card::Card(Rank rank, Suit suit) : m_Rank(rank), m_Suit(suit) 
+{
+    const int cardOffsetX = static_cast<int>(m_Rank) - 1;
+    const int cardOffsetY = static_cast<int>(m_Suit);
+
+    m_SourceRectangle = 
+    {
+        static_cast<float>(Constants::ORIGIN_X + (cardOffsetX * Constants::SPRITE_OFFSET_X)), 
+        static_cast<float>(Constants::ORIGIN_Y + (cardOffsetY * Constants::SPRITE_OFFSET_Y)), 
+        static_cast<float>(Constants::SPRITE_WIDTH), 
+        static_cast<float>(Constants::SPRITE_HEIGHT)
+    };
+}
 
 Solitaire::Card::Card(Rank rank, Suit suit, Vector2 offset) : Card(rank, suit)
 {
     this->SetCoords(offset);
-}
-
-Solitaire::Card::Card(Rank rank, Suit suit, Texture2D& texture, Vector2 offset) : Card(rank, suit)
-{
-    this->Render(texture, offset);
 }
 
 Solitaire::Rank Solitaire::Card::GetRank() const 
@@ -22,22 +29,9 @@ Solitaire::Suit Solitaire::Card::GetSuit() const
     return m_Suit; 
 }
 
-void Solitaire::Card::Render(Texture2D& texture, Vector2 offset)
-{
-    const int cardOffsetX = static_cast<int>(m_Rank) - 1;
-    const int cardOffsetY = static_cast<int>(m_Suit);
-
-    const Rectangle source = 
-    {
-        Constants::ORIGIN_X + (cardOffsetX * Constants::SPRITE_OFFSET_X), 
-        Constants::ORIGIN_Y + (cardOffsetY * Constants::SPRITE_OFFSET_Y), 
-        Constants::SPRITE_WIDTH, 
-        Constants::SPRITE_HEIGHT
-    };
-
-    this->SetCoords(offset);
-        
-    DrawTexturePro(texture, source, m_DestinationRectangle, {0, 0}, 0.0f, WHITE);
+void Solitaire::Card::Render(Texture2D& texture)
+{        
+    DrawTexturePro(texture, m_SourceRectangle, m_DestinationRectangle, {0, 0}, 0.0f, WHITE);
 }
 
 Rectangle Solitaire::Card::GetCoords()
