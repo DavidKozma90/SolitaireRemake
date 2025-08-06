@@ -7,19 +7,19 @@
 
 namespace Solitaire
 {
-    class CardCoordinates 
+    class CardPos 
     {
     public:
-        CardCoordinates();
-        ~CardCoordinates() = default;
+        CardPos();
+        ~CardPos() = default;
 
         void SetCardSourceCoordinates(IVector2 offset);
-        void SetCardDestinationCoordinates(IVector2 offset);
+        void SetOffset(IVector2 offset);
 
-        Rectangle GetCardDestinationCoordinates() const;
+        Rectangle GetCardPosition() const;
         Rectangle GetCardSourceCoordinates() const;
-        void SetX(int x);
-        void SetY(int y);
+        void MoveX(int x);
+        void MoveY(int y);
         int GetX() const;
         int GetY() const;
         int GetWidth() const;
@@ -27,7 +27,7 @@ namespace Solitaire
         
         void PrintCardCoordinates() const;
     private:
-        Rectangle m_CardDestinationCoords;
+        Rectangle m_CardPosition;
         Rectangle m_CardSourceCoords;
     };
 }

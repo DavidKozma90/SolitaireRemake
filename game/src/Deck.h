@@ -8,20 +8,21 @@
 
 namespace Solitaire
 {
+    
     class Deck
     {
     public:
         Deck();
         ~Deck() = default;
 
-        void createDeck();
-        void shuffleDeck();
+        void CreateDeck();
+        void ShuffleDeck();
 
-        Card drawCard();
-        bool isEmpty() const;
+        Card DrawCard();
+        bool IsEmpty() const;
+        size_t GetSize() const;
 
-        void renderDeck(Texture2D& texture);
-
+        CardPos deckPos;
     private:
         std::vector<Card> m_Cards;
     };

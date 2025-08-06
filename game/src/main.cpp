@@ -4,20 +4,21 @@
 #include "Card.h"
 #include "Constants.h"
 #include "Renderer.h"
+#include "PlayingCard.h"
 
 using namespace Solitaire;
 
 Texture2D texture;
 
-void placeCardAnywhere(Card& card, Vector2& offset)
+void placeCardAnywhere(PlayingCard& card, Vector2& offset)
 {
     const Vector2 mousePos = GetMousePosition();
     static bool isCardGrabbed = false;
 
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
     {
-        if((mousePos.x > card.GetCoords().GetX()) && (mousePos.x < card.GetCoords().GetX() + card.GetCoords().GetWidth()) &&
-           (mousePos.y > card.GetCoords().GetY()) && (mousePos.y < card.GetCoords().GetY() + card.GetCoords().GetHeight()))
+        if((mousePos.x > card.GetCoordinates().GetX()) && (mousePos.x < card.GetCoordinates().GetX() + card.GetCoordinates().GetWidth()) &&
+           (mousePos.y > card.GetCoordinates().GetY()) && (mousePos.y < card.GetCoordinates().GetY() + card.GetCoordinates().GetHeight()))
         {            
             isCardGrabbed = true;
         }
@@ -29,12 +30,12 @@ void placeCardAnywhere(Card& card, Vector2& offset)
 
     if(isCardGrabbed)
     {
-        offset = {mousePos.x - (card.GetCoords().GetWidth() / 2), mousePos.y - (card.GetCoords().GetHeight() / 2)};
+        offset = {mousePos.x - (card.GetCoordinates().GetWidth() / 2), mousePos.y - (card.GetCoordinates().GetHeight() / 2)};
     }
 }
 
 
-void placeCardInsideTarget(Card& card, Vector2& offset, Rectangle& rectangle)
+void placeCardInsideTarget(PlayingCard& card, Vector2& offset, Rectangle& rectangle)
 {
     const Vector2 mousePos = GetMousePosition();
     static bool isCardGrabbed = false;
@@ -42,8 +43,8 @@ void placeCardInsideTarget(Card& card, Vector2& offset, Rectangle& rectangle)
 
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
     {
-        if((mousePos.x >= card.GetCoords().GetX()) && (mousePos.x < (card.GetCoords().GetX() + card.GetCoords().GetWidth())) &&
-           (mousePos.y >= card.GetCoords().GetY()) && (mousePos.y < (card.GetCoords().GetY() + card.GetCoords().GetHeight())))
+        if((mousePos.x >= card.GetCoordinates().GetX()) && (mousePos.x < (card.GetCoordinates().GetX() + card.GetCoordinates().GetWidth())) &&
+           (mousePos.y >= card.GetCoordinates().GetY()) && (mousePos.y < (card.GetCoordinates().GetY() + card.GetCoordinates().GetHeight())))
         {            
             isCardGrabbed = true;
         }
@@ -51,7 +52,7 @@ void placeCardInsideTarget(Card& card, Vector2& offset, Rectangle& rectangle)
 
     if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
     {   
-        if(CheckCollisionRecs(card.GetCoords().GetCardDestinationCoordinates(), rectangle))
+        if(CheckCollisionRecs(card.GetCoordinates().GetCardPosition(), rectangle))
         {
             offset = {rectangle.x, rectangle.y};
         }
@@ -64,47 +65,58 @@ void placeCardInsideTarget(Card& card, Vector2& offset, Rectangle& rectangle)
 
     if(isCardGrabbed)
     {
-        offset = {mousePos.x - (card.GetCoords().GetWidth() / 2), mousePos.y - (card.GetCoords().GetHeight() / 2)};
+        offset = {mousePos.x - (card.GetCoordinates().GetWidth() / 2), mousePos.y - (card.GetCoordinates().GetHeight() / 2)};
     }
 }
 
 int main()
 {
     Renderer renderer;
-
-    InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Raylib Example");
+    
+    InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Solitaire Remake by David Kozma");
 	SetTargetFPS(60);
 
     renderer.Initialize();
 
-    Card card(Rank::Ace, Suit::Hearts);
-    Vector2 offset = {0,0};
-    const IVector2 ivectorOffset = ToIVector2(offset);
-    Rectangle rectangleTarget = {(Constants::WINDOW_WIDTH / 2) - (Constants::RENDERED_SPRITE_WIDTH / 2), 
-                                 (Constants::WINDOW_HEIGHT / 2) - (Constants::RENDERED_SPRITE_HEIGHT / 2), 
-                                  Constants::RENDERED_SPRITE_WIDTH, 
-                                  Constants::RENDERED_SPRITE_HEIGHT};
+
+    const IVector2 offset = {(Constants::DECK_ORIGIN_X * 2) + Constants::RENDERED_SPRITE_WIDTH , Constants::DECK_ORIGIN_Y};
+
+    std::vector<PlayingCard> cardFromDeck;
+
+    Deck deck;
+    renderer.SetDeckBackgroundColor(DeckBackgroundColor::Red, deck);
 
     while (!WindowShouldClose())
     {
         BeginDrawing();
-		ClearBackground(DARKGREEN);
+        ClearBackground(DARKGREEN);
 
-        DrawRectangleLines(rectangleTarget.x, rectangleTarget.y, rectangleTarget.width, rectangleTarget.height, WHITE);
-                           
         //std::cout << GetMouseX() << " " << GetMouseY() << std::endl;
 
-        //placeCardAnywhere(card, offset);
-        card.GetCoords().SetCardDestinationCoordinates(ToIVector2(offset));
-        placeCardInsideTarget(card, offset, rectangleTarget);
-        
-        renderer.RenderCard(card);
+        const Vector2 mousePos = GetMousePosition();
 
-        //std::cout << "Offset: " << offset.x << ", " << offset.y << std::endl;
+        if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
+        {
+            if((mousePos.x >= deck.deckPos.GetX()) && (mousePos.x < (deck.deckPos.GetX() + deck.deckPos.GetWidth() + 8)) &&
+               (mousePos.y >= deck.deckPos.GetY()) && (mousePos.y < (deck.deckPos.GetY() + deck.deckPos.GetHeight() + 8)))
+            {
+                if(!deck.IsEmpty())
+                {       
+                    cardFromDeck.push_back(CardFactory::CreatePlayingCard(deck.DrawCard(), offset));
+                }
+            }
+        }
 
-		EndDrawing();
+        if(!cardFromDeck.empty())
+        {
+            renderer.RenderCard(cardFromDeck.back());
+        }
+
+        renderer.RenderDeck(deck);
+
+
+        EndDrawing();
     }
-    CloseWindow();
 
-    return 0;
+    CloseWindow();
 }
