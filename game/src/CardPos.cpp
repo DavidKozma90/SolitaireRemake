@@ -19,13 +19,13 @@ Solitaire::CardPos::CardPos()
     };
 }
 
-void Solitaire::CardPos::SetCardSourceCoordinates(IVector2 offset)
+void Solitaire::CardPos::SetCardSourceCoordinates(Utils::IVector2 offset)
 {
     m_CardSourceCoords.x = static_cast<float>(Constants::ORIGIN_X + (offset.x * Constants::SPRITE_OFFSET_X));
     m_CardSourceCoords.y = static_cast<float>(Constants::ORIGIN_Y + (offset.y * Constants::SPRITE_OFFSET_Y));
 }
 
-void Solitaire::CardPos::SetOffset(IVector2 offset)
+void Solitaire::CardPos::SetOffset(Utils::IVector2 offset)
 {
     m_CardPosition.x = static_cast<float>(offset.x);
     m_CardPosition.y = static_cast<float>(offset.y);

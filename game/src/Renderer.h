@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include "PlayingCard.h"
 #include "Deck.h"
+#include "Lane.h"
 
 namespace Solitaire
 {
@@ -16,9 +17,11 @@ namespace Solitaire
         void Initialize();
         void RenderCard(PlayingCard& card);
         void RenderDeck(Deck& deck);
-        void SetDeckBackgroundColor(DeckBackgroundColor color, Deck &deck);
+        void RenderLane(Lane& lane);
+        void SetDeckBackgroundColor(DeckBackgroundColor color);
     private:
         Texture2D m_Texture;
-        DeckBackgroundColor m_BackgroundColor = DeckBackgroundColor::Red;
+        DeckBackgroundColor m_BackgroundColor;
+        Rectangle m_DeckBackgroundSource;
     };
 }

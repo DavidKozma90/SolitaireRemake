@@ -6,23 +6,30 @@ namespace Solitaire
 {
     class PlayingCard
     {
-    public:
+        public:
         PlayingCard() = delete;
-        PlayingCard(Rank rank, Suit suit, IVector2 offset);
-
+        PlayingCard(Rank rank, Suit suit, Utils::IVector2 offset);
+        
         Card& GetCard();
         CardPos& GetCoordinates();
-
+        
         Card CopyCard() const;
-    private:
+        private:
         Card m_Card;
         CardPos m_Coordinates;
     };
-
-    class CardFactory
+    
+    typedef std::vector<PlayingCard> PlayingCardVector;
+    struct CardFactory
     {
-    public:
-        static PlayingCard CreatePlayingCard(const Card& card, IVector2 offset);
+        static PlayingCard CreatePlayingCard(const Card& card, Utils::IVector2 offset);
         static Card CreateCardFromPlayingCard(const PlayingCard& playingCard);
+        static CardVector CreateCardVectorFromPlayingCardVector(const PlayingCardVector& playingCardVector);
+    };
+
+    struct CardTransfer
+    {
+        static void TransferCards(CardVector& source, CardVector& destination, int howMany);
+        static void TransferPlayingCardsToCards(PlayingCardVector& source, CardVector& destination, int howMany);
     };
 }

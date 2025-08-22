@@ -1,6 +1,5 @@
 #pragma once
 #include <raylib.h>
-#include <vector>
 #include <algorithm>
 #include <chrono>
 #include <random>
@@ -8,7 +7,6 @@
 
 namespace Solitaire
 {
-    
     class Deck
     {
     public:
@@ -18,12 +16,17 @@ namespace Solitaire
         void CreateDeck();
         void ShuffleDeck();
 
+        CardVector& GetCards();
+
         Card DrawCard();
         bool IsEmpty() const;
         size_t GetSize() const;
 
+        void InsertCard(const Card& card);
+        void RefillDeck(const CardVector& cardsToRefill);
+
         CardPos deckPos;
     private:
-        std::vector<Card> m_Cards;
+        CardVector m_Cards;
     };
 }

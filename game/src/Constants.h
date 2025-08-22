@@ -5,8 +5,8 @@ namespace Solitaire
     namespace Constants
     {
         // Window constants
-        static inline constexpr int WINDOW_WIDTH = 1300;
-        static inline constexpr int WINDOW_HEIGHT = 750;
+        static inline constexpr int WINDOW_WIDTH = 1094;
+        static inline constexpr int WINDOW_HEIGHT = 850;
 
         // Renderer constants
         static inline constexpr int ORIGIN_X = 2;
@@ -21,6 +21,11 @@ namespace Solitaire
         static inline constexpr int DECK_ORIGIN_Y = 40;
         static inline constexpr int DECK_DEPTH_OFFSET = 4;
         static inline constexpr int BACKGROUND_ROW = 4;
+        static inline constexpr int LANE_ORIGIN_X = 40;
+        static inline constexpr int LANE_ORIGIN_Y = 250;
+        static inline constexpr int LANE_OFFSET_X = 150;
+        static inline constexpr int LANE_OFFSET_Y = 30;
+        static inline constexpr int HIDDEN_CARD_OFFSET_Y = 10;
 
         // Game constants
         static inline constexpr int NUMBER_OF_CARDS_IN_DECK = 52;

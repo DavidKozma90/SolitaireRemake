@@ -2,9 +2,10 @@
 
 #include <raylib.h>
 #include <iostream>
+#include <vector>
 #include "Constants.h"
 #include "CardPos.h"
-#include "Utils.h"
+#include "Utils.hpp"
 
 
 namespace Solitaire
@@ -18,11 +19,13 @@ namespace Solitaire
         Card() = delete;
         ~Card() = default;
         Card(Rank rank, Suit suit);
-
+        
         Rank GetRank() const;
         Suit GetSuit() const;
     private:
         Rank m_Rank = Rank::Ace;
         Suit m_Suit = Suit::Hearts;
     };
+    
+    typedef std::vector<Card> CardVector;
 }

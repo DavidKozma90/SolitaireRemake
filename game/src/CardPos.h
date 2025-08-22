@@ -3,7 +3,7 @@
 #include <raylib.h>
 #include <iostream>
 #include "Constants.h"
-#include "Utils.h"
+#include "Utils.hpp"
 
 namespace Solitaire
 {
@@ -13,8 +13,8 @@ namespace Solitaire
         CardPos();
         ~CardPos() = default;
 
-        void SetCardSourceCoordinates(IVector2 offset);
-        void SetOffset(IVector2 offset);
+        void SetCardSourceCoordinates(Utils::IVector2 offset);
+        void SetOffset(Utils::IVector2 offset);
 
         Rectangle GetCardPosition() const;
         Rectangle GetCardSourceCoordinates() const;
