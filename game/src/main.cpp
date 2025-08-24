@@ -71,37 +71,40 @@ void placeCardInsideTarget(PlayingCard& card, Vector2& offset, Rectangle& rectan
     }
 }
 
-static void setBackgroundColorWithInput(DeckBackgroundColor& color)
+static DeckBackgroundColor getBackgroundColorFromInput(int key)
 {
-    if(IsKeyPressed(KEY_ONE))
+    static DeckBackgroundColor color = DeckBackgroundColor::Red;
+
+    switch(key)
     {
-        color = DeckBackgroundColor::Red;
-    }
-    else if(IsKeyPressed(KEY_TWO))
-    {
+    case KEY_ONE:
+        color = DeckBackgroundColor::Red; 
+        break;
+    case KEY_TWO:
         color = DeckBackgroundColor::Yellow;
-    }
-    else if(IsKeyPressed(KEY_THREE))
-    {
+        break;
+    case KEY_THREE:
         color = DeckBackgroundColor::Pink;
-    }
-    else if(IsKeyPressed(KEY_FOUR))
-    {
+        break;
+    case KEY_FOUR:
         color = DeckBackgroundColor::Green;
-    }
-    else if(IsKeyPressed(KEY_FIVE))
-    {
+        break;
+    case KEY_FIVE:
         color = DeckBackgroundColor::Purple;
-    }
-    else if(IsKeyPressed(KEY_SIX))
-    {
+        break;
+    case KEY_SIX:
         color = DeckBackgroundColor::Blue;
-    }
-    else if(IsKeyPressed(KEY_SEVEN))
-    {
+        break;
+    case KEY_SEVEN:
         color = DeckBackgroundColor::Grey;
+        break;
+    default:
+        break;
     }
+
+    return color;
 }
+
 
 int main()
 {
@@ -118,32 +121,60 @@ int main()
     PlayingCardVector cardFromDeck;
     Deck deck;
     DeckBackgroundColor backgroundColor = DeckBackgroundColor::Red;
+    renderer.SetDeckBackgroundColor(backgroundColor);
+    CardVector test;
+    test.reserve(1);
 
-    std::array<Lane, Constants::NUMBER_OF_LANES> lanes = 
-    {
-        Lane(0, 0, 1),
-        Lane(1, 1, 1),
-        Lane(2, 2, 1),
-        Lane(3, 3, 1),
-        Lane(4, 4, 1),
-        Lane(5, 5, 1),
-        Lane(6, 6, 1)
-    };
-
+    std::array<Lane, Constants::NUMBER_OF_LANES> lanes; 
+  
     for(int i = 0; i < Constants::NUMBER_OF_LANES; ++i)
     {
+        lanes[i] = Lane(i, i, 1);
         lanes[i].Fill(deck);
     }
+
+    Lane* selectedLane = &lanes[0];
 
     while (!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(DARKGREEN);
-        setBackgroundColorWithInput(backgroundColor);
-        renderer.SetDeckBackgroundColor(backgroundColor);
+    
+        //backgroundColor = getBackgroundColorFromInput(GetKeyPressed());
+        //renderer.SetDeckBackgroundColor(backgroundColor);
 
         Vector2 mousePos = GetMousePosition();
-        std::cout << mousePos.x << " " << mousePos.y << std::endl;
+        //std::cout << mousePos.x << " " << mousePos.y << std::endl;
+
+        
+        switch(GetKeyPressed())
+        {
+        case KEY_ONE:
+            selectedLane = &lanes[0];
+            break;
+        case KEY_TWO:
+            selectedLane = &lanes[1];
+            break;
+        case KEY_THREE:
+            selectedLane = &lanes[2];
+            break;
+        case KEY_FOUR:
+            selectedLane = &lanes[3];
+            break;
+        case KEY_FIVE:
+            selectedLane = &lanes[4];
+            break;
+        case KEY_SIX:
+            selectedLane = &lanes[5];
+            break;
+        case KEY_SEVEN:
+            selectedLane = &lanes[6];
+            break;
+        default:
+            break;
+        }
+
+        std::cout << "Selected lane hidden cards: " << selectedLane->GetNumberOfHiddenCards() << " playing cards: " << selectedLane->GetNumberOfPlayingCards() << std::endl;
 
         if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
         {
@@ -159,6 +190,24 @@ int main()
                     CardTransfer::TransferPlayingCardsToCards(cardFromDeck, deck.GetCards(), static_cast<int>(cardFromDeck.size()));
                 }
             }
+        }
+
+        if(IsKeyPressed(KEY_I))
+        {
+            CardTransfer::TransferPlayingCardsToCards(cardFromDeck, test, 1);
+            selectedLane->InsertCards(test);
+            test.clear();
+        }
+        else if(IsKeyPressed(KEY_R))
+        {
+            if(!(selectedLane->IsPlayingCardsEmpty()))
+            {
+                selectedLane->RemoveCards(1);
+            }
+        }
+        else if(IsKeyPressed(KEY_H))
+        {
+            selectedLane->ConvertHiddenToPlaying();  
         }
 
         if(!cardFromDeck.empty())

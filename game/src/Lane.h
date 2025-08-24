@@ -24,6 +24,10 @@ namespace Solitaire
         size_t GetNumberOfPlayingCards() const;
         Utils::IVector2 GetLaneOffset() const;
         PlayingCardVector& GetAllPlayingCards();
+        void ConvertHiddenToPlaying();
+        bool IsLaneEmpty() const;
+        bool IsPlayingCardsEmpty() const;
+        bool IsHiddenCardsEmpty() const;
 
     private:
         int m_NumberOfHiddenCards = 0;
@@ -32,6 +36,6 @@ namespace Solitaire
         PlayingCardVector m_PlayingCards;
         Utils::IVector2 m_LaneOffset = {0, 0};
 
-        void insertCardsToLane(const CardVector& cardsToInsert, int index);
+        void insertCardsToLane(const CardVector& cardsToInsert, int elementOffset);
     };
 }

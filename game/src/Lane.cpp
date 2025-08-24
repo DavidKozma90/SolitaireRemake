@@ -51,12 +51,12 @@ Solitaire::CardVector Solitaire::Lane::RemoveCards(int howMany)
 
 size_t Solitaire::Lane::GetNumberOfHiddenCards() const
 {
-    return m_HiddenCards.size();
+    return m_NumberOfHiddenCards;
 }
 
 size_t Solitaire::Lane::GetNumberOfPlayingCards() const
 {
-    return m_PlayingCards.size();
+    return m_NumberOfPlayingCards;
 }
 
 Utils::IVector2 Solitaire::Lane::GetLaneOffset() const
@@ -69,14 +69,44 @@ Solitaire::PlayingCardVector& Solitaire::Lane::GetAllPlayingCards()
     return m_PlayingCards;
 }
 
-void Solitaire::Lane::insertCardsToLane(const CardVector &cardsToInsert, int index)
+void Solitaire::Lane::ConvertHiddenToPlaying()
+{
+    if(!m_HiddenCards.empty() && m_PlayingCards.empty())
+    {
+        CardVector tempCard;
+        tempCard.reserve(1);
+
+        CardTransfer::TransferCards(m_HiddenCards, tempCard, 1);
+        insertCardsToLane(tempCard, 0);
+
+        --m_NumberOfHiddenCards;
+        ++m_NumberOfPlayingCards;   
+    }
+}
+
+bool Solitaire::Lane::IsLaneEmpty() const
+{
+    return (m_HiddenCards.empty() && m_PlayingCards.empty());
+}
+
+bool Solitaire::Lane::IsPlayingCardsEmpty() const 
+{
+    return m_PlayingCards.empty();
+}
+
+bool Solitaire::Lane::IsHiddenCardsEmpty() const
+{
+    return m_HiddenCards.empty();
+}
+
+void Solitaire::Lane::insertCardsToLane(const CardVector& cardsToInsert, int elementOffset)
 {
     for(int i = 0; i < static_cast<int>(cardsToInsert.size()); ++i)
     {
         Utils::IVector2 offset =
         {
             m_LaneOffset.x,
-            m_LaneOffset.y + (Constants::HIDDEN_CARD_OFFSET_Y * static_cast<int>(m_HiddenCards.size())) + ((i + index) * Constants::LANE_OFFSET_Y)
+            m_LaneOffset.y + (Constants::HIDDEN_CARD_OFFSET_Y * static_cast<int>(m_HiddenCards.size())) + ((i + elementOffset) * Constants::LANE_OFFSET_Y)
         };
 
         m_PlayingCards.push_back(CardFactory::CreatePlayingCard(cardsToInsert[i], offset));

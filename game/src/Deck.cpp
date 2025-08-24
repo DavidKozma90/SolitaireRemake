@@ -3,7 +3,7 @@
 Solitaire::Deck::Deck()
 {
     CreateDeck();
-    ShuffleDeck();
+    //ShuffleDeck();
     
     deckPos.SetOffset({Constants::DECK_ORIGIN_X, Constants::DECK_ORIGIN_Y});
 }

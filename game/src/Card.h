@@ -16,7 +16,7 @@ namespace Solitaire
     class Card
     {
     public:
-        Card() = delete;
+        Card() = default;
         ~Card() = default;
         Card(Rank rank, Suit suit);
         
