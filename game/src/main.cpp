@@ -105,7 +105,24 @@ static DeckBackgroundColor getBackgroundColorFromInput(int key)
     return color;
 }
 
+typedef std::array<Lane, Constants::MAX_NUMBER_OF_LANES> LaneArray;
 
+static int LaneSelectorFromPosition(const LaneArray& lanes, int x, int y)
+{
+    int currentLaneIndex = Constants::INVALID_LANE_INDEX;
+
+    for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
+    {
+        int laneIndex = lanes[i].GetLaneIndexFromPosition(x, y);
+        if(laneIndex != Constants::INVALID_LANE_INDEX)
+        {
+            currentLaneIndex = laneIndex;
+            break;
+        }
+    }
+    
+    return currentLaneIndex;
+}
 int main()
 {
     Renderer renderer;
@@ -125,15 +142,15 @@ int main()
     CardVector test;
     test.reserve(1);
 
-    std::array<Lane, Constants::NUMBER_OF_LANES> lanes; 
+    LaneArray lanes; 
   
-    for(int i = 0; i < Constants::NUMBER_OF_LANES; ++i)
+    for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
         lanes[i] = Lane(i, i, 1);
         lanes[i].Fill(deck);
     }
 
-    Lane* selectedLane = &lanes[0];
+    Lane* selectedLane = &lanes[Constants::LANE_NUMBER_ZERO];
 
     while (!WindowShouldClose())
     {
@@ -150,31 +167,40 @@ int main()
         switch(GetKeyPressed())
         {
         case KEY_ONE:
-            selectedLane = &lanes[0];
+            selectedLane = &lanes[Constants::LANE_NUMBER_ZERO];
             break;
         case KEY_TWO:
-            selectedLane = &lanes[1];
+            selectedLane = &lanes[Constants::LANE_NUMBER_ONE];
             break;
         case KEY_THREE:
-            selectedLane = &lanes[2];
+            selectedLane = &lanes[Constants::LANE_NUMBER_TWO];
             break;
         case KEY_FOUR:
-            selectedLane = &lanes[3];
+            selectedLane = &lanes[Constants::LANE_NUMBER_THREE];
             break;
         case KEY_FIVE:
-            selectedLane = &lanes[4];
+            selectedLane = &lanes[Constants::LANE_NUMBER_FOUR];
             break;
         case KEY_SIX:
-            selectedLane = &lanes[5];
+            selectedLane = &lanes[Constants::LANE_NUMBER_FIVE];
             break;
         case KEY_SEVEN:
-            selectedLane = &lanes[6];
+            selectedLane = &lanes[Constants::LANE_NUMBER_SIX];
             break;
         default:
             break;
         }
 
-        std::cout << "Selected lane hidden cards: " << selectedLane->GetNumberOfHiddenCards() << " playing cards: " << selectedLane->GetNumberOfPlayingCards() << std::endl;
+        int index = LaneSelectorFromPosition(lanes, mousePos.x, mousePos.y);
+
+        std::cout << "Index from position: " << index << std::endl;
+
+        if(index != Constants::INVALID_LANE_INDEX)
+        {
+            selectedLane = &lanes[index];
+        }
+        //std::cout << "Selected lane hidden cards: " << selectedLane->GetNumberOfHiddenCards() << " playing cards: " << selectedLane->GetNumberOfPlayingCards() << std::endl;
+        //std::cout << "Selected lane index: " << selectedLane->GetLaneIndexFromPosition(mousePos.x, mousePos.y) << std::endl;
 
         if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
         {
@@ -217,7 +243,7 @@ int main()
 
         renderer.RenderDeck(deck);
         
-        for(int i = 0; i < Constants::NUMBER_OF_LANES; ++i)
+        for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
         {
             renderer.RenderLane(lanes[i]);
         }

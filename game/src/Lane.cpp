@@ -1,6 +1,6 @@
 #include "Lane.h"
 
-Solitaire::Lane::Lane(int laneIndex, int hidden, int playing) : m_NumberOfHiddenCards(hidden), m_NumberOfPlayingCards(playing)
+Solitaire::Lane::Lane(int laneIndex, int hidden, int playing) : m_NumberOfHiddenCards(hidden), m_NumberOfPlayingCards(playing), m_LaneIndex(laneIndex)
 {
     m_HiddenCards.clear();
     m_PlayingCards.clear();
@@ -24,7 +24,7 @@ void Solitaire::Lane::Fill(Deck& fromDeck)
 
 void Solitaire::Lane::InsertCards(const CardVector& cardsToInsert)
 {
-    insertCardsToLane(cardsToInsert, m_NumberOfPlayingCards);
+    insertCardsToLane(cardsToInsert, GetNumberOfPlayingCards());
 
     m_NumberOfPlayingCards += static_cast<int>(cardsToInsert.size());
 }
@@ -49,14 +49,14 @@ Solitaire::CardVector Solitaire::Lane::RemoveCards(int howMany)
     return removedCards;
 }
 
-size_t Solitaire::Lane::GetNumberOfHiddenCards() const
+int Solitaire::Lane::GetNumberOfHiddenCards() const
 {
-    return m_NumberOfHiddenCards;
+    return static_cast<int>(m_HiddenCards.size());
 }
 
-size_t Solitaire::Lane::GetNumberOfPlayingCards() const
+int Solitaire::Lane::GetNumberOfPlayingCards() const
 {
-    return m_NumberOfPlayingCards;
+    return static_cast<int>(m_PlayingCards.size());
 }
 
 Utils::IVector2 Solitaire::Lane::GetLaneOffset() const
@@ -99,6 +99,25 @@ bool Solitaire::Lane::IsHiddenCardsEmpty() const
     return m_HiddenCards.empty();
 }
 
+int Solitaire::Lane::GetLaneIndex() const
+{
+    return m_LaneIndex;
+}
+
+int Solitaire::Lane::GetLaneIndexFromPosition(int x, int y) const
+{
+    int currentLaneIndex = Constants::INVALID_LANE_INDEX;
+    const int retractedOffsetY = (IsPlayingCardsEmpty()) ? ((IsHiddenCardsEmpty()) ? 0 : Constants::HIDDEN_CARD_OFFSET_Y ) : Constants::LANE_OFFSET_Y;
+
+    if((x >= m_LaneOffset.x) && (x <= (m_LaneOffset.x + Constants::RENDERED_SPRITE_WIDTH)) &&
+       (y >= m_LaneOffset.y) && (y <= (m_LaneOffset.y + Constants::RENDERED_SPRITE_HEIGHT + (GetNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y) + (GetNumberOfPlayingCards() * Constants::LANE_OFFSET_Y) - retractedOffsetY)))
+    {
+        currentLaneIndex = m_LaneIndex;
+    }
+
+    return currentLaneIndex;
+}
+
 void Solitaire::Lane::insertCardsToLane(const CardVector& cardsToInsert, int elementOffset)
 {
     for(int i = 0; i < static_cast<int>(cardsToInsert.size()); ++i)
@@ -106,7 +125,7 @@ void Solitaire::Lane::insertCardsToLane(const CardVector& cardsToInsert, int ele
         Utils::IVector2 offset =
         {
             m_LaneOffset.x,
-            m_LaneOffset.y + (Constants::HIDDEN_CARD_OFFSET_Y * static_cast<int>(m_HiddenCards.size())) + ((i + elementOffset) * Constants::LANE_OFFSET_Y)
+            m_LaneOffset.y + (Constants::HIDDEN_CARD_OFFSET_Y * GetNumberOfHiddenCards()) + ((i + elementOffset) * Constants::LANE_OFFSET_Y)
         };
 
         m_PlayingCards.push_back(CardFactory::CreatePlayingCard(cardsToInsert[i], offset));
