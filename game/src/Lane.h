@@ -14,6 +14,13 @@ namespace Solitaire
         Lane() = default;
         ~Lane() = default;
 
+        Lane(const Lane&) = default;
+        Lane& operator=(const Lane&) = default;
+
+        // note: had to enable move semantics for std::array initialization :) live and learn
+        Lane(Lane&&) noexcept = default;
+        Lane& operator=(Lane&&) noexcept = default;
+
         Lane(int laneIndex, int hidden, int playing);
         void Fill(Deck& fromDeck);
 
@@ -31,10 +38,9 @@ namespace Solitaire
 
         int GetLaneIndex() const;
         int GetLaneIndexFromPosition(int x, int y) const;
+        int GetPlayingCardIndexFromPosition(int x, int y) const;
 
     private:
-        int m_NumberOfHiddenCards = 0;
-        int m_NumberOfPlayingCards = 0;
         int m_LaneIndex = 0;
         CardVector m_HiddenCards;
         PlayingCardVector m_PlayingCards;

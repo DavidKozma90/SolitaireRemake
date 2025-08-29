@@ -29,7 +29,7 @@ namespace Solitaire
 
         // Game constants
         static inline constexpr int NUMBER_OF_CARDS_IN_DECK = 52;
-        static inline constexpr int INVALID_LANE_INDEX = -1;
+        static inline constexpr int INVALID_INDEX = -1;
         static inline constexpr int LANE_NUMBER_ZERO = 0;
         static inline constexpr int LANE_NUMBER_ONE = 1;
         static inline constexpr int LANE_NUMBER_TWO = 2;

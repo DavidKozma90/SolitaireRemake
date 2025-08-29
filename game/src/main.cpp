@@ -7,7 +7,7 @@
 #include "Renderer.h"
 #include "PlayingCard.h"
 #include "Utils.hpp"
-
+#include "Game.h"
 using namespace Solitaire;
 
 Texture2D texture;
@@ -109,12 +109,12 @@ typedef std::array<Lane, Constants::MAX_NUMBER_OF_LANES> LaneArray;
 
 static int LaneSelectorFromPosition(const LaneArray& lanes, int x, int y)
 {
-    int currentLaneIndex = Constants::INVALID_LANE_INDEX;
+    int currentLaneIndex = Constants::INVALID_INDEX;
 
     for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
         int laneIndex = lanes[i].GetLaneIndexFromPosition(x, y);
-        if(laneIndex != Constants::INVALID_LANE_INDEX)
+        if(laneIndex != Constants::INVALID_INDEX)
         {
             currentLaneIndex = laneIndex;
             break;
@@ -123,133 +123,10 @@ static int LaneSelectorFromPosition(const LaneArray& lanes, int x, int y)
     
     return currentLaneIndex;
 }
+
 int main()
 {
-    Renderer renderer;
-    
-    InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Solitaire Remake by David Kozma");
-	SetTargetFPS(60);
+    Game game;
 
-    renderer.Initialize();
-
-
-    const Utils::IVector2 offset = {(Constants::DECK_ORIGIN_X + Constants::LANE_OFFSET_X), Constants::DECK_ORIGIN_Y};
-
-    PlayingCardVector cardFromDeck;
-    Deck deck;
-    DeckBackgroundColor backgroundColor = DeckBackgroundColor::Red;
-    renderer.SetDeckBackgroundColor(backgroundColor);
-    CardVector test;
-    test.reserve(1);
-
-    LaneArray lanes; 
-  
-    for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
-    {
-        lanes[i] = Lane(i, i, 1);
-        lanes[i].Fill(deck);
-    }
-
-    Lane* selectedLane = &lanes[Constants::LANE_NUMBER_ZERO];
-
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(DARKGREEN);
-    
-        //backgroundColor = getBackgroundColorFromInput(GetKeyPressed());
-        //renderer.SetDeckBackgroundColor(backgroundColor);
-
-        Vector2 mousePos = GetMousePosition();
-        //std::cout << mousePos.x << " " << mousePos.y << std::endl;
-
-        
-        switch(GetKeyPressed())
-        {
-        case KEY_ONE:
-            selectedLane = &lanes[Constants::LANE_NUMBER_ZERO];
-            break;
-        case KEY_TWO:
-            selectedLane = &lanes[Constants::LANE_NUMBER_ONE];
-            break;
-        case KEY_THREE:
-            selectedLane = &lanes[Constants::LANE_NUMBER_TWO];
-            break;
-        case KEY_FOUR:
-            selectedLane = &lanes[Constants::LANE_NUMBER_THREE];
-            break;
-        case KEY_FIVE:
-            selectedLane = &lanes[Constants::LANE_NUMBER_FOUR];
-            break;
-        case KEY_SIX:
-            selectedLane = &lanes[Constants::LANE_NUMBER_FIVE];
-            break;
-        case KEY_SEVEN:
-            selectedLane = &lanes[Constants::LANE_NUMBER_SIX];
-            break;
-        default:
-            break;
-        }
-
-        int index = LaneSelectorFromPosition(lanes, mousePos.x, mousePos.y);
-
-        std::cout << "Index from position: " << index << std::endl;
-
-        if(index != Constants::INVALID_LANE_INDEX)
-        {
-            selectedLane = &lanes[index];
-        }
-        //std::cout << "Selected lane hidden cards: " << selectedLane->GetNumberOfHiddenCards() << " playing cards: " << selectedLane->GetNumberOfPlayingCards() << std::endl;
-        //std::cout << "Selected lane index: " << selectedLane->GetLaneIndexFromPosition(mousePos.x, mousePos.y) << std::endl;
-
-        if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
-        {
-            if((mousePos.x >= deck.deckPos.GetX()) && (mousePos.x < (deck.deckPos.GetX() + deck.deckPos.GetWidth() + (Constants::DECK_DEPTH_OFFSET * 2))) &&
-               (mousePos.y >= deck.deckPos.GetY()) && (mousePos.y < (deck.deckPos.GetY() + deck.deckPos.GetHeight() + (Constants::DECK_DEPTH_OFFSET * 2))))
-            {
-                if(!deck.IsEmpty())
-                {       
-                    cardFromDeck.push_back(CardFactory::CreatePlayingCard(deck.DrawCard(), offset));
-                }
-                else
-                {
-                    CardTransfer::TransferPlayingCardsToCards(cardFromDeck, deck.GetCards(), static_cast<int>(cardFromDeck.size()));
-                }
-            }
-        }
-
-        if(IsKeyPressed(KEY_I))
-        {
-            CardTransfer::TransferPlayingCardsToCards(cardFromDeck, test, 1);
-            selectedLane->InsertCards(test);
-            test.clear();
-        }
-        else if(IsKeyPressed(KEY_R))
-        {
-            if(!(selectedLane->IsPlayingCardsEmpty()))
-            {
-                selectedLane->RemoveCards(1);
-            }
-        }
-        else if(IsKeyPressed(KEY_H))
-        {
-            selectedLane->ConvertHiddenToPlaying();  
-        }
-
-        if(!cardFromDeck.empty())
-        {
-            renderer.RenderCard(cardFromDeck.back());
-        }
-
-        renderer.RenderDeck(deck);
-        
-        for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
-        {
-            renderer.RenderLane(lanes[i]);
-        }
-
-        EndDrawing();
-    }
-
-    CloseWindow();
+    game.Run();
 }

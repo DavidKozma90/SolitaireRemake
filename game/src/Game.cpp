@@ -1,59 +1,168 @@
 #include "Game.h"
 
-namespace Solitaire
+Solitaire::Game::Game()
 {
-    Game::Game()
+    InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Solitaire Remake by David Kozma");
+	SetTargetFPS(60);
+
+    m_Renderer.Initialize();
+    m_Deck.ShuffleDeck();
+    m_CardFromDeck.clear();
+    m_Temp.clear();
+    m_Temp.reserve(1);
+
+    for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
-        // Initialize game resources, if any
+        m_CardLanes[i] = Lane(i, i, 1);
+        m_CardLanes[i].Fill(m_Deck);
     }
 
-    Game::~Game()
+    m_SelectedLanePtr = &m_CardLanes[Constants::LANE_NUMBER_ZERO];
+}
+
+Solitaire::Game::~Game()
+{
+    CloseWindow();
+}
+
+void Solitaire::Game::OnInput()
+{
+    m_CursorPosition = GetMousePosition();
+    m_IsCursorPressed = IsMouseButtonReleased(MOUSE_LEFT_BUTTON);
+    m_IsAddingCardsButtonPressed = IsKeyPressed(KEY_I);
+    m_IsRemovingCardsButtonPressed = IsKeyPressed(KEY_R);
+    m_IsConvertingCardsButtonPressed = IsKeyPressed(KEY_H);
+    m_BackgroundColor = getBackgroundColorFromInput();
+}
+
+void Solitaire::Game::OnUpdate()
+{
+    const Utils::IVector2 offset = {(Constants::DECK_ORIGIN_X + Constants::LANE_OFFSET_X), Constants::DECK_ORIGIN_Y};
+    int index = laneSelectorFromPosition(m_CursorPosition.x, m_CursorPosition.y);
+
+    if((index != Constants::INVALID_INDEX))
     {
-        // Clean up game resources, if any
+        m_SelectedLanePtr = &m_CardLanes[index];
     }
 
-    void Game::Run()
-    {
-        InitWindow(800, 600, "Solitaire Game");
-        SetTargetFPS(60);
+    //std::cout << "Lane index: " << m_SelectedLanePtr->GetLaneIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) << " Card index: " << m_SelectedLanePtr->GetPlayingCardIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) <<std::endl;
 
-        while (!WindowShouldClose())
+    if(m_IsCursorPressed)
+    {
+        if((m_CursorPosition.x >= m_Deck.deckPos.GetX()) && (m_CursorPosition.x < (m_Deck.deckPos.GetX() + m_Deck.deckPos.GetWidth() + (Constants::DECK_DEPTH_OFFSET * 2))) &&
+           (m_CursorPosition.y >= m_Deck.deckPos.GetY()) && (m_CursorPosition.y < (m_Deck.deckPos.GetY() + m_Deck.deckPos.GetHeight() + (Constants::DECK_DEPTH_OFFSET * 2))))
         {
-            BeginDrawing();
-            ClearBackground(RAYWHITE);
-
-            // Update and draw game elements here
-            Update();
-            Draw();
-
-            EndDrawing();
+            if(!m_Deck.IsEmpty())
+            {       
+                m_CardFromDeck.push_back(CardFactory::CreatePlayingCard(m_Deck.DrawCard(), offset));
+            }
+            else
+            {
+                CardTransfer::TransferPlayingCardsToCards(m_CardFromDeck, m_Deck.GetCards(), static_cast<int>(m_CardFromDeck.size()));
+            }
         }
-
-        CloseWindow();
     }
 
-    void Solitaire::Game::LoadResources()
-    {}
-
-    void Game::UnloadResources()
+    if(m_IsAddingCardsButtonPressed)
     {
+        CardTransfer::TransferPlayingCardsToCards(m_CardFromDeck, m_Temp, 1);
+        m_SelectedLanePtr->InsertCards(m_Temp);
+        m_Temp.clear();
+    }
+    else if(m_IsRemovingCardsButtonPressed)
+    {
+        if(!(m_SelectedLanePtr->IsPlayingCardsEmpty()))
+        {
+            m_SelectedLanePtr->RemoveCards(1);
+        }
+    }
+    else if(m_IsConvertingCardsButtonPressed)
+    {
+        m_SelectedLanePtr->ConvertHiddenToPlaying();  
+    }
+}
+
+void Solitaire::Game::OnRender()
+{
+    ClearBackground(DARKGREEN);
+
+    m_Renderer.SetDeckBackgroundColor(m_BackgroundColor);
+    m_Renderer.RenderDeck(m_Deck);
+
+    if(!m_CardFromDeck.empty())
+    {
+        m_Renderer.RenderCard(m_CardFromDeck.back());
     }
 
-    void Game::End()
+    for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
+        m_Renderer.RenderLane(m_CardLanes[i]);
+    }
+}
+
+void Solitaire::Game::Run()
+{
+    while(m_IsRunning)
+    {
+        BeginDrawing();
+
+        OnInput();
+        OnUpdate();
+        OnRender();
+
+        EndDrawing();
+        m_IsRunning = !WindowShouldClose();
     }
 
-    void Game::Start()
+}
+
+Solitaire::DeckBackgroundColor Solitaire::Game::getBackgroundColorFromInput() const
+{
+    static DeckBackgroundColor color = DeckBackgroundColor::Red;
+
+    switch(GetKeyPressed())
     {
+    case KEY_ONE:
+        color = DeckBackgroundColor::Red; 
+        break;
+    case KEY_TWO:
+        color = DeckBackgroundColor::Yellow;
+        break;
+    case KEY_THREE:
+        color = DeckBackgroundColor::Pink;
+        break;
+    case KEY_FOUR:
+        color = DeckBackgroundColor::Green;
+        break;
+    case KEY_FIVE:
+        color = DeckBackgroundColor::Purple;
+        break;
+    case KEY_SIX:
+        color = DeckBackgroundColor::Blue;
+        break;
+    case KEY_SEVEN:
+        color = DeckBackgroundColor::Grey;
+        break;
+    default:
+        break;
     }
 
-    void Game::Update()
-    {
-        // Update game logic here
-    }
+    return color;
+}
 
-    void Game::Draw()
+int Solitaire::Game::laneSelectorFromPosition(int x, int y) const
+{
+    int currentLaneIndex = Constants::INVALID_INDEX;
+
+    for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
-        // Draw game elements here
+        int laneIndex = m_CardLanes[i].GetLaneIndexFromPosition(x, y);
+        if(laneIndex != Constants::INVALID_INDEX)
+        {
+            currentLaneIndex = laneIndex;
+            break;
+        }
     }
-} // namespace Solitaire
+    
+    return currentLaneIndex;
+}
