@@ -40,6 +40,9 @@ namespace Solitaire
         int GetLaneIndexFromPosition(int x, int y) const;
         int GetPlayingCardIndexFromPosition(int x, int y) const;
 
+        Rectangle GetPlayingCardArea() const;
+        Rectangle GetMovedPlayingCardArea(int cardIndex) const;
+
     private:
         int m_LaneIndex = 0;
         CardVector m_HiddenCards;

@@ -46,16 +46,9 @@ Solitaire::CardVector Solitaire::CardFactory::CreateCardVectorFromPlayingCardVec
     return cardsToBeCreated;
 }
 
-void Solitaire::CardTransfer::TransferCards(CardVector &source, CardVector &destination, int howMany)
-{    
-    for(int i = 0; (i < howMany) && (!source.empty()); ++i)
-    {
-        destination.push_back(source.back());
-        source.pop_back();
-    }   
-}
 
-void Solitaire::CardTransfer::TransferPlayingCardsToCards(PlayingCardVector &source, CardVector &destination, int howMany)
+
+void Solitaire::CardTransfer::TransformPlayingCardsToCards(PlayingCardVector &source, CardVector &destination, int howMany)
 {
     for(int i = 0; (i < howMany) && (!source.empty()); ++i)
     {

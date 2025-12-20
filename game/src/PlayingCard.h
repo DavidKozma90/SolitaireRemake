@@ -29,7 +29,16 @@ namespace Solitaire
 
     struct CardTransfer
     {
-        static void TransferCards(CardVector& source, CardVector& destination, int howMany);
-        static void TransferPlayingCardsToCards(PlayingCardVector& source, CardVector& destination, int howMany);
+        template<typename T>
+        static void TransferElements(std::vector<T>& source, std::vector<T>& destination, int howMany)
+        {
+            for(int i = 0; (i < howMany) && (!source.empty()); ++i)
+            {
+                destination.push_back(source.back());
+                source.pop_back();
+            }
+        }   
+
+        static void TransformPlayingCardsToCards(PlayingCardVector& source, CardVector& destination, int howMany);
     };
 }

@@ -19,6 +19,14 @@ void Solitaire::Renderer::RenderCard(PlayingCard& card)
     DrawTexturePro(m_Texture, card.GetCoordinates().GetCardSourceCoordinates(), card.GetCoordinates().GetCardPosition(), {0, 0}, 0.0F, WHITE);
 }
 
+void Solitaire::Renderer::RenderPlayingCards(PlayingCardVector& cards)
+{
+    for(size_t i = 0; i < cards.size(); ++i)
+    {
+        RenderCard(cards[i]);
+    }
+}
+
 void Solitaire::Renderer::RenderDeck(Deck& deck)
 {
     if(!deck.IsEmpty())
@@ -74,11 +82,7 @@ void Solitaire::Renderer::RenderLane(Lane& lane)
         DrawTexturePro(m_Texture, m_DeckBackgroundSource, hiddenCardPos, {0, 0}, 0.0F, WHITE);
     }
 
-    for(size_t i = 0; i < lane.GetNumberOfPlayingCards(); ++i)
-    {
-        PlayingCardVector& cardInLane = lane.GetAllPlayingCards();
-        RenderCard(cardInLane[i]);
-    }
+    RenderPlayingCards(lane.GetAllPlayingCards());
 }
 
 void Solitaire::Renderer::SetDeckBackgroundColor(DeckBackgroundColor color)

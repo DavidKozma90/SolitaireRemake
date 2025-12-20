@@ -16,8 +16,8 @@ void Solitaire::Lane::Fill(Deck& fromDeck)
 
     tempPlayingCards.reserve(m_PlayingCards.capacity());
 
-    CardTransfer::TransferCards(deckCards, m_HiddenCards, m_HiddenCards.capacity());
-    CardTransfer::TransferCards(deckCards, tempPlayingCards, m_PlayingCards.capacity());
+    CardTransfer::TransferElements<Card>(deckCards, m_HiddenCards, m_HiddenCards.capacity());
+    CardTransfer::TransferElements<Card>(deckCards, tempPlayingCards, m_PlayingCards.capacity());
 
     insertCardsToLane(tempPlayingCards, 0);
 }
@@ -32,7 +32,7 @@ Solitaire::CardVector Solitaire::Lane::RemoveCards(int howMany)
 {
     CardVector removedCards;
     removedCards.reserve(howMany);
-    CardTransfer::TransferPlayingCardsToCards(m_PlayingCards, removedCards, howMany);
+    CardTransfer::TransformPlayingCardsToCards(m_PlayingCards, removedCards, howMany);
     return removedCards;
 }
 
@@ -63,7 +63,7 @@ void Solitaire::Lane::ConvertHiddenToPlaying()
         CardVector tempCard;
         tempCard.reserve(1);
 
-        CardTransfer::TransferCards(m_HiddenCards, tempCard, 1);
+        CardTransfer::TransferElements<Card>(m_HiddenCards, tempCard, 1);
         insertCardsToLane(tempCard, 0);
     }
 }
@@ -121,6 +121,28 @@ int Solitaire::Lane::GetPlayingCardIndexFromPosition(int x, int y) const
     }
 
     return currentPlayingCardIndex;
+}
+
+Rectangle Solitaire::Lane::GetPlayingCardArea() const
+{
+    return 
+    {
+        static_cast<float>(m_LaneOffset.x), 
+        static_cast<float>(m_LaneOffset.y + (GetNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y)), 
+        static_cast<float>(Constants::RENDERED_SPRITE_WIDTH), 
+        static_cast<float>(Constants::RENDERED_SPRITE_HEIGHT + (GetNumberOfPlayingCards() * Constants::LANE_OFFSET_Y) - Constants::LANE_OFFSET_Y)
+    };
+}
+
+Rectangle Solitaire::Lane::GetMovedPlayingCardArea(int cardIndex) const
+{
+    return 
+    {
+        static_cast<float>(m_LaneOffset.x), 
+        static_cast<float>(m_LaneOffset.y + (GetNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y) + (cardIndex * Constants::LANE_OFFSET_Y)), 
+        static_cast<float>(Constants::RENDERED_SPRITE_WIDTH), 
+        static_cast<float>(Constants::RENDERED_SPRITE_HEIGHT + ((GetNumberOfPlayingCards() - cardIndex - 1) * Constants::LANE_OFFSET_Y))
+    };
 }
 
 void Solitaire::Lane::insertCardsToLane(const CardVector& cardsToInsert, int elementOffset)

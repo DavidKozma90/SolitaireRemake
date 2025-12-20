@@ -16,6 +16,11 @@ void placeCardAnywhere(PlayingCard& card, Vector2& offset)
 {
     const Vector2 mousePos = GetMousePosition();
     static bool isCardGrabbed = false;
+    static bool isCursorSet = false;
+    static int xDelta = 0;
+    static int yDelta = 0;
+
+    std::cout << "Card: " << card.GetCoordinates().GetX() << ", " << card.GetCoordinates().GetY() << " Mouse: " << mousePos.x << ", " << mousePos.y << std::endl;
 
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
     {
@@ -28,11 +33,26 @@ void placeCardAnywhere(PlayingCard& card, Vector2& offset)
     else
     {
         isCardGrabbed = false;
+        isCursorSet = false;
+        xDelta = 0;
+        yDelta = 0;
     }
 
     if(isCardGrabbed)
     {
-        offset = {mousePos.x - (card.GetCoordinates().GetWidth() / 2), mousePos.y - (card.GetCoordinates().GetHeight() / 2)};
+        //offset = {mousePos.x - (card.GetCoordinates().GetWidth() / 2), mousePos.y - (card.GetCoordinates().GetHeight() / 2)};
+        if(!isCursorSet)
+        {
+            xDelta = static_cast<int>(mousePos.x) - card.GetCoordinates().GetX();
+            yDelta = static_cast<int>(mousePos.y) - card.GetCoordinates().GetY();
+            isCursorSet = true;
+        }
+
+        offset = {mousePos.x - xDelta, mousePos.y - yDelta};
+        card.GetCoordinates().SetOffset(Utils::ToIVector2(offset));
+
+        
+        
     }
 }
 
@@ -126,7 +146,30 @@ static int LaneSelectorFromPosition(const LaneArray& lanes, int x, int y)
 
 int main()
 {
+    Renderer renderer;
     Game game;
+    InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Solitaire Remake by David Kozma");
+    SetTargetFPS(60);
 
+    renderer.Initialize();
+    
     game.Run();
+ #if 0
+    PlayingCard card(Rank::Ace, Suit::Hearts, {100, 100});
+    Vector2 offset = {0, 0};
+
+    while(!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(DARKGREEN);
+
+        placeCardAnywhere(card, offset);
+
+        
+        
+        renderer.RenderCard(card);
+
+        EndDrawing();
+    }
+#endif
 }

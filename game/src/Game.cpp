@@ -10,6 +10,7 @@ Solitaire::Game::Game()
     m_CardFromDeck.clear();
     m_Temp.clear();
     m_Temp.reserve(1);
+    m_SelectedCards.clear();
 
     for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
@@ -27,12 +28,16 @@ Solitaire::Game::~Game()
 
 void Solitaire::Game::OnInput()
 {
+    int pressedKey = GetKeyPressed();
+
     m_CursorPosition = GetMousePosition();
     m_IsCursorPressed = IsMouseButtonReleased(MOUSE_LEFT_BUTTON);
+    m_IsCursorDown = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
+    m_IsCursorUp = IsMouseButtonUp(MOUSE_LEFT_BUTTON);
     m_IsAddingCardsButtonPressed = IsKeyPressed(KEY_I);
     m_IsRemovingCardsButtonPressed = IsKeyPressed(KEY_R);
     m_IsConvertingCardsButtonPressed = IsKeyPressed(KEY_H);
-    m_BackgroundColor = getBackgroundColorFromInput();
+    m_BackgroundColor = getBackgroundColorFromInput(pressedKey);
 }
 
 void Solitaire::Game::OnUpdate()
@@ -47,6 +52,11 @@ void Solitaire::Game::OnUpdate()
 
     //std::cout << "Lane index: " << m_SelectedLanePtr->GetLaneIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) << " Card index: " << m_SelectedLanePtr->GetPlayingCardIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) <<std::endl;
 
+    if(m_IsCursorDown)
+    {
+        selectCardsFromLane();
+    }
+
     if(m_IsCursorPressed)
     {
         if((m_CursorPosition.x >= m_Deck.deckPos.GetX()) && (m_CursorPosition.x < (m_Deck.deckPos.GetX() + m_Deck.deckPos.GetWidth() + (Constants::DECK_DEPTH_OFFSET * 2))) &&
@@ -58,14 +68,14 @@ void Solitaire::Game::OnUpdate()
             }
             else
             {
-                CardTransfer::TransferPlayingCardsToCards(m_CardFromDeck, m_Deck.GetCards(), static_cast<int>(m_CardFromDeck.size()));
+                CardTransfer::TransformPlayingCardsToCards(m_CardFromDeck, m_Deck.GetCards(), static_cast<int>(m_CardFromDeck.size()));
             }
         }
     }
 
     if(m_IsAddingCardsButtonPressed)
     {
-        CardTransfer::TransferPlayingCardsToCards(m_CardFromDeck, m_Temp, 1);
+        CardTransfer::TransformPlayingCardsToCards(m_CardFromDeck, m_Temp, 1);
         m_SelectedLanePtr->InsertCards(m_Temp);
         m_Temp.clear();
     }
@@ -116,11 +126,11 @@ void Solitaire::Game::Run()
 
 }
 
-Solitaire::DeckBackgroundColor Solitaire::Game::getBackgroundColorFromInput() const
+Solitaire::DeckBackgroundColor Solitaire::Game::getBackgroundColorFromInput(int pressedKey) const
 {
     static DeckBackgroundColor color = DeckBackgroundColor::Red;
 
-    switch(GetKeyPressed())
+    switch(static_cast<KeyboardKey>(pressedKey))
     {
     case KEY_ONE:
         color = DeckBackgroundColor::Red; 
@@ -165,4 +175,43 @@ int Solitaire::Game::laneSelectorFromPosition(int x, int y) const
     }
     
     return currentLaneIndex;
+}
+
+void Solitaire::Game::selectCardsFromLane()
+{
+    int laneIndex = 0;
+    int cardIndex = 0;
+    static bool wasSelected = false;
+
+    laneIndex = laneSelectorFromPosition(m_CursorPosition.x, m_CursorPosition.y);
+    
+    if(laneIndex != Constants::INVALID_INDEX)
+    {
+        m_SelectedLanePtr = &m_CardLanes[laneIndex];
+    }
+    
+    cardIndex = m_SelectedLanePtr->GetPlayingCardIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y);
+    
+    if(cardIndex != Constants::INVALID_INDEX)
+    {
+        PlayingCardVector& playingCards = m_SelectedLanePtr->GetAllPlayingCards();
+        m_SelectedCards.clear();
+        CardTransfer::TransferElements<PlayingCard>(playingCards, m_SelectedCards, static_cast<int>(playingCards.size()) - cardIndex);
+        wasSelected = true;
+    }
+
+    if(wasSelected)
+    {
+        for(size_t i = 0; i < m_SelectedCards.size(); ++i)
+        {
+            int xDelta = static_cast<int>(m_CursorPosition.x) - m_SelectedCards[i].GetCoordinates().GetX();
+            int yDelta = static_cast<int>(m_CursorPosition.y) - m_SelectedCards[i].GetCoordinates().GetY();
+            int newX = static_cast<int>(m_CursorPosition.x) - xDelta;
+            int newY = static_cast<int>(m_CursorPosition.y) - yDelta + (i * Constants::LANE_OFFSET_Y);
+            m_SelectedCards[i].GetCoordinates().SetOffset({newX, newY});
+
+            m_SelectedCards[i].GetCoordinates().MoveX(xDelta);
+            m_SelectedCards[i].GetCoordinates().MoveY(yDelta);
+        }
+    }
 }
