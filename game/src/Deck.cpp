@@ -1,60 +1,65 @@
 #include "Deck.h"
 
-Solitaire::Deck::Deck()
+namespace Solitaire
 {
-    CreateDeck();
-    //ShuffleDeck();
+
+Deck::Deck()
+{
+    Deck::create();
+    //Deck::shuffle();
     
     deckPos.setOffset({Constants::DECK_ORIGIN_X, Constants::DECK_ORIGIN_Y});
 }
 
-void Solitaire::Deck::CreateDeck()
+void Deck::create()
 {
     m_Cards.clear();
     m_Cards.reserve(Constants::NUMBER_OF_CARDS_IN_DECK);
-    for (int suit = static_cast<int>(Suit::Hearts); suit <= static_cast<int>(Suit::Spades); ++suit)
+    for (uint8_t suit = static_cast<uint8_t>(Suit::Hearts); suit <= static_cast<uint8_t>(Suit::Spades); ++suit)
     {
-        for (int rank = static_cast<int>(Rank::Ace); rank <= static_cast<int>(Rank::King); ++rank)
+        for (uint8_t rank = static_cast<uint8_t>(Rank::Ace); rank <= static_cast<uint8_t>(Rank::King); ++rank)
         {
             m_Cards.emplace_back(static_cast<Rank>(rank), static_cast<Suit>(suit));
         }
     }
 }
-void Solitaire::Deck::ShuffleDeck()
+void Deck::shuffle()
 {
     auto seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::shuffle(m_Cards.begin(), m_Cards.end(), std::default_random_engine((uint32_t)seed));
 }
 
-Solitaire::CardVector& Solitaire::Deck::GetCards()
+CardVector& Deck::getCards()
 {
     return m_Cards;
 }
 
-Solitaire::Card Solitaire::Deck::DrawCard()
+Card Deck::drawCard()
 {
     Card card = m_Cards.back();
     m_Cards.pop_back();
     return card;
 }
 
-void Solitaire::Deck::InsertCard(const Card& card)
+void Deck::insert(const Card& card)
 {
     m_Cards.push_back(card);
 }
 
-bool Solitaire::Deck::IsEmpty() const
+bool Deck::isEmpty() const
 {
     return m_Cards.empty();
 }
 
-size_t Solitaire::Deck::GetSize() const
+size_t Deck::getSize() const
 {
     return m_Cards.size();
 }
 
-void Solitaire::Deck::RefillDeck(const CardVector& cardsToRefill)
+void Deck::refill(const CardVector& cardsToRefill)
 {
     m_Cards.clear();
     m_Cards.insert(m_Cards.end(), cardsToRefill.begin(), cardsToRefill.end());
 }
+
+} // namespace Solitaire

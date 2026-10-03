@@ -114,7 +114,7 @@ int main()
     InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Solitaire Remake by David Kozma");
     SetTargetFPS(60);
 
-    renderer.Initialize();
+    renderer.init();
     
     game.Run();
  #if 0
@@ -130,7 +130,7 @@ int main()
 
         
         
-        renderer.RenderCard(card);
+        renderer.renderCard(card);
 
         EndDrawing();
     }

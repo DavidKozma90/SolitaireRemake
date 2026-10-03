@@ -1,35 +1,39 @@
 #include "Renderer.h"
 #include "Game.h"
+#include <array>
 
-void Solitaire::Renderer::Initialize()
+namespace Solitaire
 {
-    m_Texture = LoadTexture("resources/sprites/spriteSheet.png");
-    m_BackgroundColor = DeckBackgroundColor::Red;
-    m_DeckBackgroundSource = 
+
+void Renderer::init()
+{
+    m_texture = LoadTexture("resources/sprites/spriteSheet.png");
+    m_backgroundColor = DeckBackgroundColor::Red;
+    m_deckBackgroundSource = 
     {
-        static_cast<float>(Constants::ORIGIN_X + (static_cast<int>(m_BackgroundColor) * Constants::SPRITE_OFFSET_X)),
+        static_cast<float>(Constants::ORIGIN_X + (static_cast<int>(m_backgroundColor) * Constants::SPRITE_OFFSET_X)),
         static_cast<float>(Constants::ORIGIN_Y + (Constants::BACKGROUND_ROW * Constants::SPRITE_OFFSET_Y)), 
         static_cast<float>(Constants::SPRITE_WIDTH), 
         static_cast<float>(Constants::SPRITE_HEIGHT)
     };
 }
 
-void Solitaire::Renderer::RenderCard(const PlayingCard& card)
+void Renderer::renderCard(const PlayingCard& card)
 {
-    DrawTexturePro(m_Texture, card.getCardPosition().getCardSourceCoordinates(), card.getCardPosition().getCardPosition(), {0, 0}, 0.0F, WHITE);
+    DrawTexturePro(m_texture, card.getCardPosition().getCardSourceCoordinates(), card.getCardPosition().getCardPosition(), {0, 0}, 0.0F, WHITE);
 }
 
-void Solitaire::Renderer::RenderPlayingCards(const PlayingCardVector& cards)
+void Renderer::renderPlayingCards(const PlayingCardVector& cards)
 {
     for(size_t i = 0; i < cards.size(); ++i)
     {
-        RenderCard(cards[i]);
+        renderCard(cards[i]);
     }
 }
 
-void Solitaire::Renderer::RenderDeck(const Deck& deck)
+void Renderer::renderDeck(const Deck& deck)
 {
-    if(!deck.IsEmpty())
+    if(deck.isEmpty() == false)
     {
         Rectangle deckBack = deck.deckPos.getCardPosition();
     
@@ -49,25 +53,25 @@ void Solitaire::Renderer::RenderDeck(const Deck& deck)
             deckBack.height 
         };
     
-        if(deck.GetSize() < Constants::NUMBER_OF_CARDS_IN_DECK / 3)
+        if(deck.getSize() < Constants::NUMBER_OF_CARDS_IN_DECK / 3)
         {
-            DrawTexturePro(m_Texture, m_DeckBackgroundSource, deckBack, {0, 0}, 0.0F, WHITE);
+            DrawTexturePro(m_texture, m_deckBackgroundSource, deckBack, {0, 0}, 0.0F, WHITE);
         }
-        else if(deck.GetSize() < (2 * Constants::NUMBER_OF_CARDS_IN_DECK) / 3)
+        else if(deck.getSize() < (2 * Constants::NUMBER_OF_CARDS_IN_DECK) / 3)
         {
-            DrawTexturePro(m_Texture, m_DeckBackgroundSource, deckBack, {0, 0}, 0.0F, WHITE);
-            DrawTexturePro(m_Texture, m_DeckBackgroundSource, deckMiddle, {0, 0}, 0.0F, WHITE);
+            DrawTexturePro(m_texture, m_deckBackgroundSource, deckBack, {0, 0}, 0.0F, WHITE);
+            DrawTexturePro(m_texture, m_deckBackgroundSource, deckMiddle, {0, 0}, 0.0F, WHITE);
         }
         else
         {
-            DrawTexturePro(m_Texture, m_DeckBackgroundSource, deckBack, {0, 0}, 0.0F, WHITE);
-            DrawTexturePro(m_Texture, m_DeckBackgroundSource, deckMiddle, {0, 0}, 0.0F, WHITE);
-            DrawTexturePro(m_Texture, m_DeckBackgroundSource, deckFront, {0, 0}, 0.0F, WHITE);
+            DrawTexturePro(m_texture, m_deckBackgroundSource, deckBack, {0, 0}, 0.0F, WHITE);
+            DrawTexturePro(m_texture, m_deckBackgroundSource, deckMiddle, {0, 0}, 0.0F, WHITE);
+            DrawTexturePro(m_texture, m_deckBackgroundSource, deckFront, {0, 0}, 0.0F, WHITE);
         }
     }
 }
 
-void Solitaire::Renderer::RenderLane(Lane& lane)
+void Renderer::renderLane(const Lane& lane)
 {
     for(size_t i = 0; i < lane.GetNumberOfHiddenCards(); ++i)
     {
@@ -79,14 +83,16 @@ void Solitaire::Renderer::RenderLane(Lane& lane)
             static_cast<float>(Constants::RENDERED_SPRITE_HEIGHT) 
         };
 
-        DrawTexturePro(m_Texture, m_DeckBackgroundSource, hiddenCardPos, {0, 0}, 0.0F, WHITE);
+        DrawTexturePro(m_texture, m_deckBackgroundSource, hiddenCardPos, {0, 0}, 0.0F, WHITE);
     }
 
-    RenderPlayingCards(lane.GetAllPlayingCards());
+    renderPlayingCards(lane.GetAllPlayingCards());
 }
 
-void Solitaire::Renderer::SetDeckBackgroundColor(DeckBackgroundColor color)
+void Renderer::setDeckBackgroundColor(DeckBackgroundColor color)
 {
-    m_BackgroundColor = color;
-    m_DeckBackgroundSource.x = static_cast<float>(Constants::ORIGIN_X + (static_cast<int>(m_BackgroundColor) * Constants::SPRITE_OFFSET_X));
+    m_backgroundColor = color;
+    m_deckBackgroundSource.x = static_cast<float>(Constants::ORIGIN_X + (static_cast<int32_t>(m_backgroundColor) * Constants::SPRITE_OFFSET_X));
 }
+
+} // namespace Solitaire

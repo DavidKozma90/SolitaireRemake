@@ -1,6 +1,9 @@
 #include "CardPos.h"
 
-Solitaire::CardPos::CardPos()
+namespace Solitaire
+{
+
+CardPos::CardPos()
 {
     m_CardPosition = 
     {
@@ -19,60 +22,62 @@ Solitaire::CardPos::CardPos()
     };
 }
 
-void Solitaire::CardPos::setCardSourceCoordinates(Utils::IVector2 offset)
+void CardPos::setCardSourceCoordinates(Utils::IVector2 offset)
 {
     m_CardSourceCoords.x = static_cast<float>(Constants::ORIGIN_X + (offset.x * Constants::SPRITE_OFFSET_X));
     m_CardSourceCoords.y = static_cast<float>(Constants::ORIGIN_Y + (offset.y * Constants::SPRITE_OFFSET_Y));
 }
 
-void Solitaire::CardPos::setOffset(Utils::IVector2 offset)
+void CardPos::setOffset(Utils::IVector2 offset)
 {
     m_CardPosition.x = static_cast<float>(offset.x);
     m_CardPosition.y = static_cast<float>(offset.y);
 }
 
-Rectangle Solitaire::CardPos::getCardPosition() const
+Rectangle CardPos::getCardPosition() const
 {
     return m_CardPosition;
 }
 
-Rectangle Solitaire::CardPos::getCardSourceCoordinates() const
+Rectangle CardPos::getCardSourceCoordinates() const
 {
     return m_CardSourceCoords;
 }
 
-void Solitaire::CardPos::moveX(int dx)
+void CardPos::moveX(int32_t dx)
 {
     m_CardPosition.x += static_cast<float>(dx);
 }
 
-void Solitaire::CardPos::moveY(int dy)
+void CardPos::moveY(int32_t dy)
 {
     m_CardPosition.y += static_cast<float>(dy);
 }
 
-int Solitaire::CardPos::getX() const
+int32_t CardPos::getX() const
 {
-    return static_cast<int>(m_CardPosition.x);
+    return static_cast<int32_t>(m_CardPosition.x);
 }
 
-int Solitaire::CardPos::getY() const
+int32_t CardPos::getY() const
 {
-    return static_cast<int>(m_CardPosition.y);
+    return static_cast<int32_t>(m_CardPosition.y);
 }
 
-int Solitaire::CardPos::getWidth() const
+int32_t CardPos::getWidth() const
 {
-    return static_cast<int>(m_CardPosition.width);
+    return static_cast<int32_t>(m_CardPosition.width);
 }
 
-int Solitaire::CardPos::getHeight() const
+int32_t CardPos::getHeight() const
 {
-    return static_cast<int>(m_CardPosition.height);
+    return static_cast<int32_t>(m_CardPosition.height);
 }
 
-void Solitaire::CardPos::printCardCoordinates() const
+void CardPos::printCardCoordinates() const
 {
     std::cout << "Card (x0, y0, width, height): " << m_CardPosition.x << ", " << m_CardPosition.y << ", " 
               << m_CardPosition.width << ", " << m_CardPosition.height << std::endl;
 }
+
+} // namespace Solitaire

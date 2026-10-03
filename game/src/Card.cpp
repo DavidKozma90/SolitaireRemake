@@ -1,13 +1,18 @@
 #include "Card.h"
 
-Solitaire::Card::Card(Rank rank, Suit suit) : m_rank(rank), m_suit(suit) {}
+namespace Solitaire
+{
 
-Solitaire::Rank Solitaire::Card::getRank() const 
+Card::Card(Rank rank = Rank::Ace, Suit suit = Suit::Hearts) : m_rank(rank), m_suit(suit) {}
+
+Rank Card::getRank() const 
 { 
     return m_rank; 
 }
 
-Solitaire::Suit Solitaire::Card::getSuit() const 
+Suit Card::getSuit() const 
 { 
     return m_suit; 
 }
+
+} // namespace Solitaire

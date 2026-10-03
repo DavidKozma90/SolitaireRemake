@@ -7,26 +7,27 @@
 
 namespace Solitaire
 {
-    class Deck
-    {
-    public:
-        Deck();
-        ~Deck() = default;
+    
+class Deck
+{
+public:
+    Deck();
 
-        void CreateDeck();
-        void ShuffleDeck();
+    void create();
+    void shuffle();
 
-        CardVector& GetCards();
+    CardVector& getCards();
 
-        Card DrawCard();
-        bool IsEmpty() const;
-        size_t GetSize() const;
+    Card drawCard();
+    bool isEmpty() const;
+    size_t getSize() const;
 
-        void InsertCard(const Card& card);
-        void RefillDeck(const CardVector& cardsToRefill);
+    void insert(const Card& card);
+    void refill(const CardVector& cardsToRefill);
 
-        CardPos deckPos;
-    private:
-        CardVector m_Cards;
-    };
+    CardPos deckPos;
+private:
+    CardVector m_Cards;
+};
+
 }

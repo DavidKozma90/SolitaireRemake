@@ -5,8 +5,8 @@ Solitaire::Game::Game()
     InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Solitaire Remake by David Kozma");
 	SetTargetFPS(60);
 
-    m_Renderer.Initialize();
-    m_Deck.ShuffleDeck();
+    m_Renderer.init();
+    m_Deck.shuffle();
     m_CardFromDeck.clear();
     m_Temp.clear();
     m_Temp.reserve(1);
@@ -62,13 +62,13 @@ void Solitaire::Game::OnUpdate()
         if((m_CursorPosition.x >= m_Deck.deckPos.getX()) && (m_CursorPosition.x < (m_Deck.deckPos.getX() + m_Deck.deckPos.getWidth() + (Constants::DECK_DEPTH_OFFSET * 2))) &&
            (m_CursorPosition.y >= m_Deck.deckPos.getY()) && (m_CursorPosition.y < (m_Deck.deckPos.getY() + m_Deck.deckPos.getHeight() + (Constants::DECK_DEPTH_OFFSET * 2))))
         {
-            if(!m_Deck.IsEmpty())
+            if(!m_Deck.isEmpty())
             {       
-                m_CardFromDeck.push_back(CardFactory::createPlayingCard(m_Deck.DrawCard(), offset));
+                m_CardFromDeck.push_back(CardFactory::createPlayingCard(m_Deck.drawCard(), offset));
             }
             else
             {
-                CardTransfer::TransformPlayingCardsToCards(m_CardFromDeck, m_Deck.GetCards(), static_cast<int>(m_CardFromDeck.size()));
+                CardTransfer::TransformPlayingCardsToCards(m_CardFromDeck, m_Deck.getCards(), static_cast<int>(m_CardFromDeck.size()));
             }
         }
     }
@@ -96,17 +96,17 @@ void Solitaire::Game::OnRender()
 {
     ClearBackground(DARKGREEN);
 
-    m_Renderer.SetDeckBackgroundColor(m_BackgroundColor);
-    m_Renderer.RenderDeck(m_Deck);
+    m_Renderer.setDeckBackgroundColor(m_BackgroundColor);
+    m_Renderer.renderDeck(m_Deck);
 
     if(!m_CardFromDeck.empty())
     {
-        m_Renderer.RenderCard(m_CardFromDeck.back());
+        m_Renderer.renderCard(m_CardFromDeck.back());
     }
 
     for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
-        m_Renderer.RenderLane(m_CardLanes[i]);
+        m_Renderer.renderLane(m_CardLanes[i]);
     }
 }
 

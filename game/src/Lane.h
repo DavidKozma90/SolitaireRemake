@@ -8,46 +8,40 @@
 
 namespace Solitaire
 {
-    class Lane
-    {
-    public:
-        Lane() = default;
-        ~Lane() = default;
+class Lane
+{
+public:
+    DEFAULT_CTOR(Lane);
+    Lane(int laneIndex, int hidden, int playing);
+    void Fill(Deck& fromDeck);
 
-        Lane(const Lane&) = default;
-        Lane& operator=(const Lane&) = default;
+    void InsertCards(const CardVector& cardsToInsert);
+    CardVector RemoveCards(int howMany);
+    
+    int GetNumberOfHiddenCards() const;
+    int GetNumberOfPlayingCards() const;
+    Utils::IVector2 GetLaneOffset() const;
+    PlayingCardVector& GetAllPlayingCards();
+    const PlayingCardVector& GetAllPlayingCards() const;
+    void ConvertHiddenToPlaying();
+    bool IsLaneEmpty() const;
+    bool IsPlayingCardsEmpty() const;
+    bool IsHiddenCardsEmpty() const;
 
-        Lane(Lane&&) noexcept = default;
-        Lane& operator=(Lane&&) noexcept = default;
+    int GetLaneIndex() const;
+    int GetLaneIndexFromPosition(int x, int y) const;
+    int GetPlayingCardIndexFromPosition(int x, int y) const;
 
-        Lane(int laneIndex, int hidden, int playing);
-        void Fill(Deck& fromDeck);
+    Rectangle GetPlayingCardArea() const;
+    Rectangle GetMovedPlayingCardArea(int cardIndex) const;
 
-        void InsertCards(const CardVector& cardsToInsert);
-        CardVector RemoveCards(int howMany);
-        
-        int GetNumberOfHiddenCards() const;
-        int GetNumberOfPlayingCards() const;
-        Utils::IVector2 GetLaneOffset() const;
-        PlayingCardVector& GetAllPlayingCards();
-        void ConvertHiddenToPlaying();
-        bool IsLaneEmpty() const;
-        bool IsPlayingCardsEmpty() const;
-        bool IsHiddenCardsEmpty() const;
+private:
+    int m_LaneIndex = 0;
+    CardVector m_HiddenCards;
+    PlayingCardVector m_PlayingCards;
+    Utils::IVector2 m_LaneOffset = {0, 0};
 
-        int GetLaneIndex() const;
-        int GetLaneIndexFromPosition(int x, int y) const;
-        int GetPlayingCardIndexFromPosition(int x, int y) const;
+    void insertCardsToLane(const CardVector& cardsToInsert, int elementOffset);
+};
 
-        Rectangle GetPlayingCardArea() const;
-        Rectangle GetMovedPlayingCardArea(int cardIndex) const;
-
-    private:
-        int m_LaneIndex = 0;
-        CardVector m_HiddenCards;
-        PlayingCardVector m_PlayingCards;
-        Utils::IVector2 m_LaneOffset = {0, 0};
-
-        void insertCardsToLane(const CardVector& cardsToInsert, int elementOffset);
-    };
 }

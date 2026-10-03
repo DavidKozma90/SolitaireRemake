@@ -1,9 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Solitaire
-{
-namespace Constants
+namespace Solitaire::Constants
 {
 
 // Window constants
@@ -41,5 +39,4 @@ static inline constexpr int32_t LANE_NUMBER_FIVE = 5;
 static inline constexpr int32_t LANE_NUMBER_SIX = 6;
 static inline constexpr int32_t MAX_NUMBER_OF_LANES = 7;
 
-}
-}
+} // namespace Solitaire::Constants

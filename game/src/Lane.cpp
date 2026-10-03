@@ -11,7 +11,7 @@ Solitaire::Lane::Lane(int laneIndex, int hidden, int playing) : m_LaneIndex(lane
 
 void Solitaire::Lane::Fill(Deck& fromDeck)
 {
-    CardVector& deckCards = fromDeck.GetCards();
+    CardVector& deckCards = fromDeck.getCards();
     CardVector tempPlayingCards;
 
     tempPlayingCards.reserve(m_PlayingCards.capacity());
@@ -52,6 +52,11 @@ Utils::IVector2 Solitaire::Lane::GetLaneOffset() const
 }
 
 Solitaire::PlayingCardVector& Solitaire::Lane::GetAllPlayingCards()
+{
+    return m_PlayingCards;
+}
+
+const Solitaire::PlayingCardVector& Solitaire::Lane::GetAllPlayingCards() const
 {
     return m_PlayingCards;
 }
