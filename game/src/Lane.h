@@ -17,7 +17,6 @@ namespace Solitaire
         Lane(const Lane&) = default;
         Lane& operator=(const Lane&) = default;
 
-        // note: had to enable move semantics for std::array initialization :) live and learn
         Lane(Lane&&) noexcept = default;
         Lane& operator=(Lane&&) noexcept = default;
 
