@@ -20,12 +20,12 @@ void placeCardAnywhere(PlayingCard& card, Vector2& offset)
     static int xDelta = 0;
     static int yDelta = 0;
 
-    std::cout << "Card: " << card.GetCoordinates().GetX() << ", " << card.GetCoordinates().GetY() << " Mouse: " << mousePos.x << ", " << mousePos.y << std::endl;
+    std::cout << "Card: " << card.getCardPosition().getX() << ", " << card.getCardPosition().getY() << " Mouse: " << mousePos.x << ", " << mousePos.y << std::endl;
 
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
     {
-        if((mousePos.x > card.GetCoordinates().GetX()) && (mousePos.x < card.GetCoordinates().GetX() + card.GetCoordinates().GetWidth()) &&
-           (mousePos.y > card.GetCoordinates().GetY()) && (mousePos.y < card.GetCoordinates().GetY() + card.GetCoordinates().GetHeight()))
+        if((mousePos.x > card.getCardPosition().getX()) && (mousePos.x < card.getCardPosition().getX() + card.getCardPosition().getWidth()) &&
+           (mousePos.y > card.getCardPosition().getY()) && (mousePos.y < card.getCardPosition().getY() + card.getCardPosition().getHeight()))
         {            
             isCardGrabbed = true;
         }
@@ -40,19 +40,16 @@ void placeCardAnywhere(PlayingCard& card, Vector2& offset)
 
     if(isCardGrabbed)
     {
-        //offset = {mousePos.x - (card.GetCoordinates().GetWidth() / 2), mousePos.y - (card.GetCoordinates().GetHeight() / 2)};
+        //offset = {mousePos.x - (card.getCardPosition().getWidth() / 2), mousePos.y - (card.getCardPosition().getHeight() / 2)};
         if(!isCursorSet)
         {
-            xDelta = static_cast<int>(mousePos.x) - card.GetCoordinates().GetX();
-            yDelta = static_cast<int>(mousePos.y) - card.GetCoordinates().GetY();
+            xDelta = static_cast<int>(mousePos.x) - card.getCardPosition().getX();
+            yDelta = static_cast<int>(mousePos.y) - card.getCardPosition().getY();
             isCursorSet = true;
         }
 
         offset = {mousePos.x - xDelta, mousePos.y - yDelta};
-        card.GetCoordinates().SetOffset(Utils::ToIVector2(offset));
-
-        
-        
+        card.getCardPosition().setOffset(Utils::ToIVector2(offset));
     }
 }
 
@@ -65,8 +62,8 @@ void placeCardInsideTarget(PlayingCard& card, Vector2& offset, Rectangle& rectan
 
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
     {
-        if((mousePos.x >= card.GetCoordinates().GetX()) && (mousePos.x < (card.GetCoordinates().GetX() + card.GetCoordinates().GetWidth())) &&
-           (mousePos.y >= card.GetCoordinates().GetY()) && (mousePos.y < (card.GetCoordinates().GetY() + card.GetCoordinates().GetHeight())))
+        if((mousePos.x >= card.getCardPosition().getX()) && (mousePos.x < (card.getCardPosition().getX() + card.getCardPosition().getWidth())) &&
+           (mousePos.y >= card.getCardPosition().getY()) && (mousePos.y < (card.getCardPosition().getY() + card.getCardPosition().getHeight())))
         {            
             isCardGrabbed = true;
         }
@@ -74,7 +71,7 @@ void placeCardInsideTarget(PlayingCard& card, Vector2& offset, Rectangle& rectan
 
     if(IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
     {   
-        if(CheckCollisionRecs(card.GetCoordinates().GetCardPosition(), rectangle))
+        if(CheckCollisionRecs(card.getCardPosition().getCardPosition(), rectangle))
         {
             offset = {rectangle.x, rectangle.y};
         }
@@ -87,42 +84,8 @@ void placeCardInsideTarget(PlayingCard& card, Vector2& offset, Rectangle& rectan
 
     if(isCardGrabbed)
     {
-        offset = {mousePos.x - (card.GetCoordinates().GetWidth() / 2), mousePos.y - (card.GetCoordinates().GetHeight() / 2)};
+        offset = {mousePos.x - (card.getCardPosition().getWidth() / 2), mousePos.y - (card.getCardPosition().getHeight() / 2)};
     }
-}
-
-static DeckBackgroundColor getBackgroundColorFromInput(int key)
-{
-    static DeckBackgroundColor color = DeckBackgroundColor::Red;
-
-    switch(key)
-    {
-    case KEY_ONE:
-        color = DeckBackgroundColor::Red; 
-        break;
-    case KEY_TWO:
-        color = DeckBackgroundColor::Yellow;
-        break;
-    case KEY_THREE:
-        color = DeckBackgroundColor::Pink;
-        break;
-    case KEY_FOUR:
-        color = DeckBackgroundColor::Green;
-        break;
-    case KEY_FIVE:
-        color = DeckBackgroundColor::Purple;
-        break;
-    case KEY_SIX:
-        color = DeckBackgroundColor::Blue;
-        break;
-    case KEY_SEVEN:
-        color = DeckBackgroundColor::Grey;
-        break;
-    default:
-        break;
-    }
-
-    return color;
 }
 
 typedef std::array<Lane, Constants::MAX_NUMBER_OF_LANES> LaneArray;

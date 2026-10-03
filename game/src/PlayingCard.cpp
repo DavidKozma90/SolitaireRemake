@@ -4,55 +4,65 @@ Solitaire::PlayingCard::PlayingCard(Rank rank, Suit suit, Utils::IVector2 offset
 {
     const Utils::IVector2 sourceOffset = { static_cast<int>(rank) - 1, static_cast<int>(suit) };
 
-    m_Coordinates.SetCardSourceCoordinates(sourceOffset);
-    m_Coordinates.SetOffset(offset);
+    m_Coordinates.setCardSourceCoordinates(sourceOffset);
+    m_Coordinates.setOffset(offset);
 }
 
-Solitaire::Card& Solitaire::PlayingCard::GetCard()
+Solitaire::Card Solitaire::PlayingCard::getCard() const
 {
     return m_Card;
 }
 
-Solitaire::CardPos& Solitaire::PlayingCard::GetCoordinates()
+Solitaire::CardPos Solitaire::PlayingCard::getCardPosition() const
 {
     return m_Coordinates;
 }
 
-Solitaire::Card Solitaire::PlayingCard::CopyCard() const
+Solitaire::PlayingCard Solitaire::CardFactory::createPlayingCard(const Card& card, Utils::IVector2 offset)
 {
-    return m_Card;
+    return PlayingCard(card.getRank(), card.getSuit(), offset);
 }
 
-Solitaire::PlayingCard Solitaire::CardFactory::CreatePlayingCard(const Card& card, Utils::IVector2 offset)
+Solitaire::Card Solitaire::CardFactory::createCardFromPlayingCard(const PlayingCard& playingCard)
 {
-    return PlayingCard(card.GetRank(), card.GetSuit(), offset);
+    return playingCard.getCard();
 }
 
-Solitaire::Card Solitaire::CardFactory::CreateCardFromPlayingCard(const PlayingCard& playingCard)
-{
-    return playingCard.CopyCard();
-}
-
-Solitaire::CardVector Solitaire::CardFactory::CreateCardVectorFromPlayingCardVector(const PlayingCardVector &playingCardVector)
+Solitaire::CardVector Solitaire::CardFactory::createCardVectorFromPlayingCardVector(const PlayingCardVector& playingCardVector)
 {
     CardVector cardsToBeCreated;
     cardsToBeCreated.reserve(playingCardVector.size());
 
-    for(size_t i = 0; i < playingCardVector.size(); ++i)
+    for(size_t i{}; i < playingCardVector.size(); ++i)
     {
-        cardsToBeCreated.push_back(CreateCardFromPlayingCard(playingCardVector[i]));
+        cardsToBeCreated.push_back(createCardFromPlayingCard(playingCardVector[i]));
     }
 
     return cardsToBeCreated;
 }
 
-
-
-void Solitaire::CardTransfer::TransformPlayingCardsToCards(PlayingCardVector &source, CardVector &destination, int howMany)
+template<typename T>
+void Solitaire::CardTransfer::TransferElements(std::vector<T>& source, std::vector<T>& destination, size_t howMany)
 {
-    for(int i = 0; (i < howMany) && (!source.empty()); ++i)
+    for (size_t i{}; (i < howMany) && (!source.empty()); ++i)
     {
-        destination.push_back(CardFactory::CreateCardFromPlayingCard(source.back()));
+        destination.push_back(source.back());
+        source.pop_back();
+    }
+}
+
+template void Solitaire::CardTransfer::TransferElements<Solitaire::Card>(std::vector<Solitaire::Card>& source,
+                                                                         std::vector<Solitaire::Card>& destination,
+                                                                         size_t howMany);
+template void Solitaire::CardTransfer::TransferElements<Solitaire::PlayingCard>(std::vector<Solitaire::PlayingCard>& source,
+                                                                                std::vector<Solitaire::PlayingCard>& destination,
+                                                                                size_t howMany);
+
+void Solitaire::CardTransfer::TransformPlayingCardsToCards(PlayingCardVector &source, CardVector &destination, size_t howMany)
+{
+    for (size_t i{}; (i < howMany) && (!source.empty()); ++i)
+    {
+        destination.push_back(CardFactory::createCardFromPlayingCard(source.back()));
         source.pop_back();
     }
 }

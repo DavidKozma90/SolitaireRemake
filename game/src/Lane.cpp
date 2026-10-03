@@ -155,6 +155,6 @@ void Solitaire::Lane::insertCardsToLane(const CardVector& cardsToInsert, int ele
             m_LaneOffset.y + (Constants::HIDDEN_CARD_OFFSET_Y * GetNumberOfHiddenCards()) + ((i + elementOffset) * Constants::LANE_OFFSET_Y)
         };
 
-        m_PlayingCards.push_back(CardFactory::CreatePlayingCard(cardsToInsert[i], offset));
+        m_PlayingCards.push_back(CardFactory::createPlayingCard(cardsToInsert[i], offset));
     }
 }

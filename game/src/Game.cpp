@@ -12,7 +12,7 @@ Solitaire::Game::Game()
     m_Temp.reserve(1);
     m_SelectedCards.clear();
 
-    for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
+    for (size_t i{}; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
         m_CardLanes[i] = Lane(i, i, 1);
         m_CardLanes[i].Fill(m_Deck);
@@ -59,12 +59,12 @@ void Solitaire::Game::OnUpdate()
 
     if(m_IsCursorPressed)
     {
-        if((m_CursorPosition.x >= m_Deck.deckPos.GetX()) && (m_CursorPosition.x < (m_Deck.deckPos.GetX() + m_Deck.deckPos.GetWidth() + (Constants::DECK_DEPTH_OFFSET * 2))) &&
-           (m_CursorPosition.y >= m_Deck.deckPos.GetY()) && (m_CursorPosition.y < (m_Deck.deckPos.GetY() + m_Deck.deckPos.GetHeight() + (Constants::DECK_DEPTH_OFFSET * 2))))
+        if((m_CursorPosition.x >= m_Deck.deckPos.getX()) && (m_CursorPosition.x < (m_Deck.deckPos.getX() + m_Deck.deckPos.getWidth() + (Constants::DECK_DEPTH_OFFSET * 2))) &&
+           (m_CursorPosition.y >= m_Deck.deckPos.getY()) && (m_CursorPosition.y < (m_Deck.deckPos.getY() + m_Deck.deckPos.getHeight() + (Constants::DECK_DEPTH_OFFSET * 2))))
         {
             if(!m_Deck.IsEmpty())
             {       
-                m_CardFromDeck.push_back(CardFactory::CreatePlayingCard(m_Deck.DrawCard(), offset));
+                m_CardFromDeck.push_back(CardFactory::createPlayingCard(m_Deck.DrawCard(), offset));
             }
             else
             {
@@ -204,14 +204,14 @@ void Solitaire::Game::selectCardsFromLane()
     {
         for(size_t i = 0; i < m_SelectedCards.size(); ++i)
         {
-            int xDelta = static_cast<int>(m_CursorPosition.x) - m_SelectedCards[i].GetCoordinates().GetX();
-            int yDelta = static_cast<int>(m_CursorPosition.y) - m_SelectedCards[i].GetCoordinates().GetY();
+            int xDelta = static_cast<int>(m_CursorPosition.x) - m_SelectedCards[i].getCardPosition().getX();
+            int yDelta = static_cast<int>(m_CursorPosition.y) - m_SelectedCards[i].getCardPosition().getY();
             int newX = static_cast<int>(m_CursorPosition.x) - xDelta;
             int newY = static_cast<int>(m_CursorPosition.y) - yDelta + (i * Constants::LANE_OFFSET_Y);
-            m_SelectedCards[i].GetCoordinates().SetOffset({newX, newY});
+            m_SelectedCards[i].getCardPosition().setOffset({newX, newY});
 
-            m_SelectedCards[i].GetCoordinates().MoveX(xDelta);
-            m_SelectedCards[i].GetCoordinates().MoveY(yDelta);
+            m_SelectedCards[i].getCardPosition().moveX(xDelta);
+            m_SelectedCards[i].getCardPosition().moveY(yDelta);
         }
     }
 }

@@ -19,59 +19,59 @@ Solitaire::CardPos::CardPos()
     };
 }
 
-void Solitaire::CardPos::SetCardSourceCoordinates(Utils::IVector2 offset)
+void Solitaire::CardPos::setCardSourceCoordinates(Utils::IVector2 offset)
 {
     m_CardSourceCoords.x = static_cast<float>(Constants::ORIGIN_X + (offset.x * Constants::SPRITE_OFFSET_X));
     m_CardSourceCoords.y = static_cast<float>(Constants::ORIGIN_Y + (offset.y * Constants::SPRITE_OFFSET_Y));
 }
 
-void Solitaire::CardPos::SetOffset(Utils::IVector2 offset)
+void Solitaire::CardPos::setOffset(Utils::IVector2 offset)
 {
     m_CardPosition.x = static_cast<float>(offset.x);
     m_CardPosition.y = static_cast<float>(offset.y);
 }
 
-Rectangle Solitaire::CardPos::GetCardPosition() const
+Rectangle Solitaire::CardPos::getCardPosition() const
 {
     return m_CardPosition;
 }
 
-Rectangle Solitaire::CardPos::GetCardSourceCoordinates() const
+Rectangle Solitaire::CardPos::getCardSourceCoordinates() const
 {
     return m_CardSourceCoords;
 }
 
-void Solitaire::CardPos::MoveX(int x)
+void Solitaire::CardPos::moveX(int dx)
 {
-    m_CardPosition.x += static_cast<float>(x);
+    m_CardPosition.x += static_cast<float>(dx);
 }
 
-void Solitaire::CardPos::MoveY(int y)
+void Solitaire::CardPos::moveY(int dy)
 {
-    m_CardPosition.y += static_cast<float>(y);
+    m_CardPosition.y += static_cast<float>(dy);
 }
 
-int Solitaire::CardPos::GetX() const
+int Solitaire::CardPos::getX() const
 {
     return static_cast<int>(m_CardPosition.x);
 }
 
-int Solitaire::CardPos::GetY() const
+int Solitaire::CardPos::getY() const
 {
     return static_cast<int>(m_CardPosition.y);
 }
 
-int Solitaire::CardPos::GetWidth() const
+int Solitaire::CardPos::getWidth() const
 {
     return static_cast<int>(m_CardPosition.width);
 }
 
-int Solitaire::CardPos::GetHeight() const
+int Solitaire::CardPos::getHeight() const
 {
     return static_cast<int>(m_CardPosition.height);
 }
 
-void Solitaire::CardPos::PrintCardCoordinates() const
+void Solitaire::CardPos::printCardCoordinates() const
 {
     std::cout << "Card (x0, y0, width, height): " << m_CardPosition.x << ", " << m_CardPosition.y << ", " 
               << m_CardPosition.width << ", " << m_CardPosition.height << std::endl;

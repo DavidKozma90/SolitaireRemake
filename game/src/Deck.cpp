@@ -5,7 +5,7 @@ Solitaire::Deck::Deck()
     CreateDeck();
     //ShuffleDeck();
     
-    deckPos.SetOffset({Constants::DECK_ORIGIN_X, Constants::DECK_ORIGIN_Y});
+    deckPos.setOffset({Constants::DECK_ORIGIN_X, Constants::DECK_ORIGIN_Y});
 }
 
 void Solitaire::Deck::CreateDeck()

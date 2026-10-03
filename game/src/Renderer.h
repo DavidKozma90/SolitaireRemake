@@ -15,9 +15,9 @@ namespace Solitaire
         ~Renderer() = default;
 
         void Initialize();
-        void RenderCard(PlayingCard& card);
-        void RenderPlayingCards(PlayingCardVector& cards);
-        void RenderDeck(Deck& deck);
+        void RenderCard(const PlayingCard& card);
+        void RenderPlayingCards(const PlayingCardVector& cards);
+        void RenderDeck(const Deck& deck);
         void RenderLane(Lane& lane);
         void SetDeckBackgroundColor(DeckBackgroundColor color);
     private:

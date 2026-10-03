@@ -14,12 +14,12 @@ void Solitaire::Renderer::Initialize()
     };
 }
 
-void Solitaire::Renderer::RenderCard(PlayingCard& card)
+void Solitaire::Renderer::RenderCard(const PlayingCard& card)
 {
-    DrawTexturePro(m_Texture, card.GetCoordinates().GetCardSourceCoordinates(), card.GetCoordinates().GetCardPosition(), {0, 0}, 0.0F, WHITE);
+    DrawTexturePro(m_Texture, card.getCardPosition().getCardSourceCoordinates(), card.getCardPosition().getCardPosition(), {0, 0}, 0.0F, WHITE);
 }
 
-void Solitaire::Renderer::RenderPlayingCards(PlayingCardVector& cards)
+void Solitaire::Renderer::RenderPlayingCards(const PlayingCardVector& cards)
 {
     for(size_t i = 0; i < cards.size(); ++i)
     {
@@ -27,11 +27,11 @@ void Solitaire::Renderer::RenderPlayingCards(PlayingCardVector& cards)
     }
 }
 
-void Solitaire::Renderer::RenderDeck(Deck& deck)
+void Solitaire::Renderer::RenderDeck(const Deck& deck)
 {
     if(!deck.IsEmpty())
     {
-        Rectangle deckBack = deck.deckPos.GetCardPosition();
+        Rectangle deckBack = deck.deckPos.getCardPosition();
     
         Rectangle deckMiddle = 
         { 
