@@ -29,8 +29,8 @@ struct CardFactory
 struct CardTransfer
 {
     template<typename T>
-    static void Solitaire::CardTransfer::TransferElements(std::vector<T>& source, std::vector<T>& destination, size_t howMany);
-    static void Solitaire::CardTransfer::TransformPlayingCardsToCards(PlayingCardVector& source, CardVector& destination, size_t howMany);
+    static void TransferElements(std::vector<T>& source, std::vector<T>& destination, size_t howMany);
+    static void TransformPlayingCardsToCards(PlayingCardVector& source, CardVector& destination, size_t howMany);
 };
 
 }
