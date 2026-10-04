@@ -29,4 +29,4 @@ private:
 
 using CardVector = std::vector<Card>;
 
-}
+} // namespace Solitaire

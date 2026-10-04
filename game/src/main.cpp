@@ -8,6 +8,7 @@
 #include "PlayingCard.h"
 #include "Utils.hpp"
 #include "Game.h"
+#include "LogTrace.h"
 using namespace Solitaire;
 
 Texture2D texture;
@@ -96,7 +97,7 @@ static int LaneSelectorFromPosition(const LaneArray& lanes, int x, int y)
 
     for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
-        int laneIndex = lanes[i].GetLaneIndexFromPosition(x, y);
+        int laneIndex = lanes[i].getLaneIndexFromPosition(x, y);
         if(laneIndex != Constants::INVALID_INDEX)
         {
             currentLaneIndex = laneIndex;
@@ -109,30 +110,9 @@ static int LaneSelectorFromPosition(const LaneArray& lanes, int x, int y)
 
 int main()
 {
-    Renderer renderer;
     Game game;
-    InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Solitaire Remake by David Kozma");
-    SetTargetFPS(60);
 
-    renderer.init();
+    LOG_INFO("GAME: Starting Main Game Loop...");
     
     game.Run();
- #if 0
-    PlayingCard card(Rank::Ace, Suit::Hearts, {100, 100});
-    Vector2 offset = {0, 0};
-
-    while(!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(DARKGREEN);
-
-        placeCardAnywhere(card, offset);
-
-        
-        
-        renderer.renderCard(card);
-
-        EndDrawing();
-    }
-#endif
 }

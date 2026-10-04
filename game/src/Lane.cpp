@@ -1,126 +1,149 @@
 #include "Lane.h"
+#include "utils.h"
 
-Solitaire::Lane::Lane(int laneIndex, int hidden, int playing) : m_LaneIndex(laneIndex)
+Solitaire::Lane::Lane(int laneIndex, int hidden, int playing) : m_laneIndex(laneIndex)
 {
-    m_HiddenCards.clear();
-    m_PlayingCards.clear();
-    m_HiddenCards.reserve(hidden);
-    m_PlayingCards.reserve(playing);
-    m_LaneOffset = {Constants::LANE_ORIGIN_X + (laneIndex * Constants::LANE_OFFSET_X), Constants::LANE_ORIGIN_Y};
+    m_hiddenCards.clear();
+    m_playingCards.clear();
+    m_hiddenCards.reserve(hidden);
+    m_playingCards.reserve(playing);
+    m_laneOffset = {Constants::LANE_ORIGIN_X + (laneIndex * Constants::LANE_OFFSET_X), Constants::LANE_ORIGIN_Y};
 }
 
-void Solitaire::Lane::Fill(Deck& fromDeck)
+void Solitaire::Lane::fill(Deck& fromDeck)
 {
     CardVector& deckCards = fromDeck.getCards();
     CardVector tempPlayingCards;
 
-    tempPlayingCards.reserve(m_PlayingCards.capacity());
+    tempPlayingCards.reserve(m_playingCards.capacity());
 
-    CardTransfer::TransferElements<Card>(deckCards, m_HiddenCards, m_HiddenCards.capacity());
-    CardTransfer::TransferElements<Card>(deckCards, tempPlayingCards, m_PlayingCards.capacity());
+    CardTransfer::TransferElements<Card>(deckCards, m_hiddenCards, m_hiddenCards.capacity());
+    CardTransfer::TransferElements<Card>(deckCards, tempPlayingCards, m_playingCards.capacity());
 
     insertCardsToLane(tempPlayingCards, 0);
 }
 
-void Solitaire::Lane::InsertCards(const CardVector& cardsToInsert)
+void Solitaire::Lane::insertCards(const CardVector& cardsToInsert)
 {
-    insertCardsToLane(cardsToInsert, GetNumberOfPlayingCards());
+    insertCardsToLane(cardsToInsert, getNumberOfPlayingCards());
 }
 
 
-Solitaire::CardVector Solitaire::Lane::RemoveCards(int howMany)
+Solitaire::CardVector Solitaire::Lane::removeCards(size_t howMany)
 {
     CardVector removedCards;
-    removedCards.reserve(howMany);
-    CardTransfer::TransformPlayingCardsToCards(m_PlayingCards, removedCards, howMany);
+
+    if ((howMany != 0) && (howMany <= getNumberOfPlayingCards()))
+    {
+        removedCards.reserve(howMany);
+        CardTransfer::TransformPlayingCardsToCards(m_playingCards, removedCards, howMany);
+    }
+    else
+    {
+        removedCards.clear();
+        TRACELOG(LOG_WARNING, "GAME: You are trying to remove [%d] cards cards from a lane that has currently [%d] playing cards!", howMany, getNumberOfPlayingCards());
+    }
+
     return removedCards;
 }
 
-int Solitaire::Lane::GetNumberOfHiddenCards() const
+size_t Solitaire::Lane::getNumberOfHiddenCards() const
 {
-    return static_cast<int>(m_HiddenCards.size());
+    return m_hiddenCards.size();
 }
 
-int Solitaire::Lane::GetNumberOfPlayingCards() const
+size_t Solitaire::Lane::getNumberOfPlayingCards() const
 {
-    return static_cast<int>(m_PlayingCards.size());
+    return m_playingCards.size();
 }
 
-Utils::IVector2 Solitaire::Lane::GetLaneOffset() const
+Utils::IVector2 Solitaire::Lane::getLaneOffset() const
 {
-    return m_LaneOffset;
+    return m_laneOffset;
 }
 
-Solitaire::PlayingCardVector& Solitaire::Lane::GetAllPlayingCards()
+Solitaire::PlayingCardVector& Solitaire::Lane::getAllPlayingCards()
 {
-    return m_PlayingCards;
+    return m_playingCards;
 }
 
-const Solitaire::PlayingCardVector& Solitaire::Lane::GetAllPlayingCards() const
+const Solitaire::PlayingCardVector& Solitaire::Lane::getAllPlayingCards() const
 {
-    return m_PlayingCards;
+    return m_playingCards;
 }
 
-void Solitaire::Lane::ConvertHiddenToPlaying()
+void Solitaire::Lane::convertTopHiddenCardToPlayingCard()
 {
-    if(!m_HiddenCards.empty() && m_PlayingCards.empty())
+    if(hasHiddenCards() && hasNoPlayingCards())
     {
         CardVector tempCard;
         tempCard.reserve(1);
 
-        CardTransfer::TransferElements<Card>(m_HiddenCards, tempCard, 1);
+        CardTransfer::TransferElements<Card>(m_hiddenCards, tempCard, 1);
         insertCardsToLane(tempCard, 0);
     }
 }
 
-bool Solitaire::Lane::IsLaneEmpty() const
+bool Solitaire::Lane::isLaneEmpty() const
 {
-    return (m_HiddenCards.empty() && m_PlayingCards.empty());
+    return (m_hiddenCards.empty() && m_playingCards.empty());
 }
 
-bool Solitaire::Lane::IsPlayingCardsEmpty() const 
+bool Solitaire::Lane::hasNoPlayingCards() const 
 {
-    return m_PlayingCards.empty();
+    return m_playingCards.empty();
 }
 
-bool Solitaire::Lane::IsHiddenCardsEmpty() const
+bool Solitaire::Lane::hasNoHiddenCards() const
 {
-    return m_HiddenCards.empty();
+    return m_hiddenCards.empty();
 }
 
-int Solitaire::Lane::GetLaneIndex() const
+bool Solitaire::Lane::hasPlayingCards() const
 {
-    return m_LaneIndex;
+    return (m_playingCards.empty() == false);
 }
 
-int Solitaire::Lane::GetLaneIndexFromPosition(int x, int y) const
+bool Solitaire::Lane::hasHiddenCards() const
 {
-    int currentLaneIndex = Constants::INVALID_INDEX;
-    const int retractedOffsetY = (IsPlayingCardsEmpty()) ? ((IsHiddenCardsEmpty()) ? 0 : Constants::HIDDEN_CARD_OFFSET_Y ) : Constants::LANE_OFFSET_Y;
+    return (m_hiddenCards.empty() == false);
+}
 
-    if((x >= m_LaneOffset.x) && (x <= (m_LaneOffset.x + Constants::RENDERED_SPRITE_WIDTH)) &&
-       (y >= m_LaneOffset.y) && (y <= (m_LaneOffset.y + Constants::RENDERED_SPRITE_HEIGHT + (GetNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y) + (GetNumberOfPlayingCards() * Constants::LANE_OFFSET_Y) - retractedOffsetY)))
+int32_t Solitaire::Lane::getLaneIndex() const
+{
+    return m_laneIndex;
+}
+
+int32_t Solitaire::Lane::getLaneIndexFromPosition(int32_t x, int32_t y) const
+{
+    int32_t currentLaneIndex = Constants::INVALID_INDEX;
+    const int32_t retractedOffsetY = (hasNoPlayingCards()) ? ((hasNoHiddenCards()) ? 0 : Constants::HIDDEN_CARD_OFFSET_Y ) : Constants::LANE_OFFSET_Y;
+
+    if((x >= m_laneOffset.x) && (x <= (m_laneOffset.x + Constants::RENDERED_SPRITE_WIDTH)) &&
+       (y >= m_laneOffset.y) && (y <= (m_laneOffset.y + Constants::RENDERED_SPRITE_HEIGHT + (getNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y) + (getNumberOfPlayingCards() * Constants::LANE_OFFSET_Y) - retractedOffsetY)))
     {
-        currentLaneIndex = m_LaneIndex;
+        currentLaneIndex = m_laneIndex;
     }
 
     return currentLaneIndex;
 }
 
-int Solitaire::Lane::GetPlayingCardIndexFromPosition(int x, int y) const
+int32_t Solitaire::Lane::getPlayingCardIndexFromPosition(int32_t x, int32_t y) const
 {
-    int currentPlayingCardIndex = Constants::INVALID_INDEX;
+    int32_t currentPlayingCardIndex = Constants::INVALID_INDEX;
 
-    if(!IsPlayingCardsEmpty())
+    if(hasPlayingCards())
     {
-        if((x >= m_LaneOffset.x) && (x <= (m_LaneOffset.x + Constants::RENDERED_SPRITE_WIDTH)) &&
-           (y >= (m_LaneOffset.y + (GetNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y))) && (y <= (m_LaneOffset.y + Constants::RENDERED_SPRITE_HEIGHT + (GetNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y) + (GetNumberOfPlayingCards() * Constants::LANE_OFFSET_Y) - Constants::LANE_OFFSET_Y)))
+        if((x >= m_laneOffset.x) && 
+           (x <= (m_laneOffset.x + Constants::RENDERED_SPRITE_WIDTH)) &&
+           (y >= (m_laneOffset.y + (getNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y))) && 
+           (y <= (m_laneOffset.y + Constants::RENDERED_SPRITE_HEIGHT + (getNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y) + (getNumberOfPlayingCards() * Constants::LANE_OFFSET_Y) - Constants::LANE_OFFSET_Y)))
         {
-            const int relativeY = y - (m_LaneOffset.y + (GetNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y));
+            const int32_t relativeY = y - (m_laneOffset.y + (getNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y));
             currentPlayingCardIndex = relativeY / Constants::LANE_OFFSET_Y;
-            if(currentPlayingCardIndex >= GetNumberOfPlayingCards())
+            if(currentPlayingCardIndex >= getNumberOfPlayingCards())
             {
-                currentPlayingCardIndex = GetNumberOfPlayingCards() - 1;
+                currentPlayingCardIndex = getNumberOfPlayingCards() - 1;
             }
         }
     }
@@ -128,38 +151,33 @@ int Solitaire::Lane::GetPlayingCardIndexFromPosition(int x, int y) const
     return currentPlayingCardIndex;
 }
 
-Rectangle Solitaire::Lane::GetPlayingCardArea() const
+Rectangle Solitaire::Lane::getPlayingCardArea() const
 {
     return 
     {
-        static_cast<float>(m_LaneOffset.x), 
-        static_cast<float>(m_LaneOffset.y + (GetNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y)), 
+        static_cast<float>(m_laneOffset.x), 
+        static_cast<float>(m_laneOffset.y + (getNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y)), 
         static_cast<float>(Constants::RENDERED_SPRITE_WIDTH), 
-        static_cast<float>(Constants::RENDERED_SPRITE_HEIGHT + (GetNumberOfPlayingCards() * Constants::LANE_OFFSET_Y) - Constants::LANE_OFFSET_Y)
+        static_cast<float>(Constants::RENDERED_SPRITE_HEIGHT + (getNumberOfPlayingCards() * Constants::LANE_OFFSET_Y) - Constants::LANE_OFFSET_Y)
     };
 }
 
-Rectangle Solitaire::Lane::GetMovedPlayingCardArea(int cardIndex) const
+Rectangle Solitaire::Lane::getMovedPlayingCardArea(int32_t cardIndex) const
 {
     return 
     {
-        static_cast<float>(m_LaneOffset.x), 
-        static_cast<float>(m_LaneOffset.y + (GetNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y) + (cardIndex * Constants::LANE_OFFSET_Y)), 
+        static_cast<float>(m_laneOffset.x), 
+        static_cast<float>(m_laneOffset.y + (getNumberOfHiddenCards() * Constants::HIDDEN_CARD_OFFSET_Y) + (cardIndex * Constants::LANE_OFFSET_Y)), 
         static_cast<float>(Constants::RENDERED_SPRITE_WIDTH), 
-        static_cast<float>(Constants::RENDERED_SPRITE_HEIGHT + ((GetNumberOfPlayingCards() - cardIndex - 1) * Constants::LANE_OFFSET_Y))
+        static_cast<float>(Constants::RENDERED_SPRITE_HEIGHT + ((getNumberOfPlayingCards() - cardIndex - 1) * Constants::LANE_OFFSET_Y))
     };
 }
 
-void Solitaire::Lane::insertCardsToLane(const CardVector& cardsToInsert, int elementOffset)
+void Solitaire::Lane::insertCardsToLane(const CardVector& cardsToInsert, int32_t elementOffset)
 {
-    for(int i = 0; i < static_cast<int>(cardsToInsert.size()); ++i)
+    for(size_t i{}; i < cardsToInsert.size(); ++i)
     {
-        Utils::IVector2 offset =
-        {
-            m_LaneOffset.x,
-            m_LaneOffset.y + (Constants::HIDDEN_CARD_OFFSET_Y * GetNumberOfHiddenCards()) + ((i + elementOffset) * Constants::LANE_OFFSET_Y)
-        };
-
-        m_PlayingCards.push_back(CardFactory::createPlayingCard(cardsToInsert[i], offset));
+        const int32_t laneElementOffset = (Constants::HIDDEN_CARD_OFFSET_Y * getNumberOfHiddenCards()) + ((i + elementOffset) * Constants::LANE_OFFSET_Y);
+        m_playingCards.push_back(CardFactory::createPlayingCard(cardsToInsert[i], { m_laneOffset.x, (m_laneOffset.y + laneElementOffset) }));
     }
 }

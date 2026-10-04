@@ -2,9 +2,6 @@
 
 Solitaire::Game::Game()
 {
-    InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Solitaire Remake by David Kozma");
-	SetTargetFPS(60);
-
     m_Renderer.init();
     m_Deck.shuffle();
     m_CardFromDeck.clear();
@@ -15,7 +12,7 @@ Solitaire::Game::Game()
     for (size_t i{}; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
         m_CardLanes[i] = Lane(i, i, 1);
-        m_CardLanes[i].Fill(m_Deck);
+        m_CardLanes[i].fill(m_Deck);
     }
 
     m_SelectedLanePtr = &m_CardLanes[Constants::LANE_NUMBER_ZERO];
@@ -50,7 +47,7 @@ void Solitaire::Game::OnUpdate()
         m_SelectedLanePtr = &m_CardLanes[index];
     }
 
-    //std::cout << "Lane index: " << m_SelectedLanePtr->GetLaneIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) << " Card index: " << m_SelectedLanePtr->GetPlayingCardIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) <<std::endl;
+    //std::cout << "Lane index: " << m_SelectedLanePtr->getLaneIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) << " Card index: " << m_SelectedLanePtr->getPlayingCardIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) <<std::endl;
 
     if(m_IsCursorDown)
     {
@@ -76,19 +73,19 @@ void Solitaire::Game::OnUpdate()
     if(m_IsAddingCardsButtonPressed)
     {
         CardTransfer::TransformPlayingCardsToCards(m_CardFromDeck, m_Temp, 1);
-        m_SelectedLanePtr->InsertCards(m_Temp);
+        m_SelectedLanePtr->insertCards(m_Temp);
         m_Temp.clear();
     }
     else if(m_IsRemovingCardsButtonPressed)
     {
-        if(!(m_SelectedLanePtr->IsPlayingCardsEmpty()))
+        if(!(m_SelectedLanePtr->hasNoPlayingCards()))
         {
-            m_SelectedLanePtr->RemoveCards(1);
+            m_SelectedLanePtr->removeCards(1);
         }
     }
     else if(m_IsConvertingCardsButtonPressed)
     {
-        m_SelectedLanePtr->ConvertHiddenToPlaying();  
+        m_SelectedLanePtr->convertTopHiddenCardToPlayingCard();  
     }
 }
 
@@ -166,7 +163,7 @@ int Solitaire::Game::laneSelectorFromPosition(int x, int y) const
 
     for(int i = 0; i < Constants::MAX_NUMBER_OF_LANES; ++i)
     {
-        int laneIndex = m_CardLanes[i].GetLaneIndexFromPosition(x, y);
+        int laneIndex = m_CardLanes[i].getLaneIndexFromPosition(x, y);
         if(laneIndex != Constants::INVALID_INDEX)
         {
             currentLaneIndex = laneIndex;
@@ -190,11 +187,11 @@ void Solitaire::Game::selectCardsFromLane()
         m_SelectedLanePtr = &m_CardLanes[laneIndex];
     }
     
-    cardIndex = m_SelectedLanePtr->GetPlayingCardIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y);
+    cardIndex = m_SelectedLanePtr->getPlayingCardIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y);
     
     if(cardIndex != Constants::INVALID_INDEX)
     {
-        PlayingCardVector& playingCards = m_SelectedLanePtr->GetAllPlayingCards();
+        PlayingCardVector& playingCards = m_SelectedLanePtr->getAllPlayingCards();
         m_SelectedCards.clear();
         CardTransfer::TransferElements<PlayingCard>(playingCards, m_SelectedCards, static_cast<int>(playingCards.size()) - cardIndex);
         wasSelected = true;

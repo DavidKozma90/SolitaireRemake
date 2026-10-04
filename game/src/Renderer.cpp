@@ -7,6 +7,9 @@ namespace Solitaire
 
 void Renderer::init()
 {
+    InitWindow(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT, "Solitaire Remake by David Kozma");
+    SetTargetFPS(60);
+    
     m_texture = LoadTexture("resources/sprites/spriteSheet.png");
     m_backgroundColor = DeckBackgroundColor::Red;
     m_deckBackgroundSource = 
@@ -73,12 +76,12 @@ void Renderer::renderDeck(const Deck& deck)
 
 void Renderer::renderLane(const Lane& lane)
 {
-    for(size_t i = 0; i < lane.GetNumberOfHiddenCards(); ++i)
+    for(size_t i = 0; i < lane.getNumberOfHiddenCards(); ++i)
     {
         Rectangle hiddenCardPos = 
         { 
-            static_cast<float>(lane.GetLaneOffset().x), 
-            static_cast<float>(lane.GetLaneOffset().y + (i * Constants::HIDDEN_CARD_OFFSET_Y)), 
+            static_cast<float>(lane.getLaneOffset().x), 
+            static_cast<float>(lane.getLaneOffset().y + (i * Constants::HIDDEN_CARD_OFFSET_Y)), 
             static_cast<float>(Constants::RENDERED_SPRITE_WIDTH), 
             static_cast<float>(Constants::RENDERED_SPRITE_HEIGHT) 
         };
@@ -86,7 +89,7 @@ void Renderer::renderLane(const Lane& lane)
         DrawTexturePro(m_texture, m_deckBackgroundSource, hiddenCardPos, {0, 0}, 0.0F, WHITE);
     }
 
-    renderPlayingCards(lane.GetAllPlayingCards());
+    renderPlayingCards(lane.getAllPlayingCards());
 }
 
 void Renderer::setDeckBackgroundColor(DeckBackgroundColor color)

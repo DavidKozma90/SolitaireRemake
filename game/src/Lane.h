@@ -13,35 +13,37 @@ class Lane
 public:
     DEFAULT_CTOR(Lane);
     Lane(int laneIndex, int hidden, int playing);
-    void Fill(Deck& fromDeck);
+    void fill(Deck& fromDeck);
 
-    void InsertCards(const CardVector& cardsToInsert);
-    CardVector RemoveCards(int howMany);
+    void insertCards(const CardVector& cardsToInsert);
+    CardVector removeCards(size_t howMany);
     
-    int GetNumberOfHiddenCards() const;
-    int GetNumberOfPlayingCards() const;
-    Utils::IVector2 GetLaneOffset() const;
-    PlayingCardVector& GetAllPlayingCards();
-    const PlayingCardVector& GetAllPlayingCards() const;
-    void ConvertHiddenToPlaying();
-    bool IsLaneEmpty() const;
-    bool IsPlayingCardsEmpty() const;
-    bool IsHiddenCardsEmpty() const;
+    size_t getNumberOfHiddenCards() const;
+    size_t getNumberOfPlayingCards() const;
+    Utils::IVector2 getLaneOffset() const;
+    PlayingCardVector& getAllPlayingCards();
+    const PlayingCardVector& getAllPlayingCards() const;
+    void convertTopHiddenCardToPlayingCard();
+    bool isLaneEmpty() const;
+    bool hasNoPlayingCards() const;
+    bool hasNoHiddenCards() const;
+    bool hasPlayingCards() const;
+    bool hasHiddenCards() const;
 
-    int GetLaneIndex() const;
-    int GetLaneIndexFromPosition(int x, int y) const;
-    int GetPlayingCardIndexFromPosition(int x, int y) const;
+    int32_t getLaneIndex() const;
+    int32_t getLaneIndexFromPosition(int32_t x, int32_t y) const;
+    int32_t getPlayingCardIndexFromPosition(int32_t x, int32_t y) const;
 
-    Rectangle GetPlayingCardArea() const;
-    Rectangle GetMovedPlayingCardArea(int cardIndex) const;
+    Rectangle getPlayingCardArea() const;
+    Rectangle getMovedPlayingCardArea(int32_t cardIndex) const;
 
 private:
-    int m_LaneIndex = 0;
-    CardVector m_HiddenCards;
-    PlayingCardVector m_PlayingCards;
-    Utils::IVector2 m_LaneOffset = {0, 0};
+    int32_t m_laneIndex = 0;
+    CardVector m_hiddenCards;
+    PlayingCardVector m_playingCards;
+    Utils::IVector2 m_laneOffset = {0, 0};
 
-    void insertCardsToLane(const CardVector& cardsToInsert, int elementOffset);
+    void insertCardsToLane(const CardVector& cardsToInsert, int32_t elementOffset);
 };
 
 }
