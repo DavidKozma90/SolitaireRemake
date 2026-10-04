@@ -1,5 +1,5 @@
 #include "Lane.h"
-#include "utils.h"
+#include "LogTrace.h"
 
 Solitaire::Lane::Lane(int laneIndex, int hidden, int playing) : m_laneIndex(laneIndex)
 {
@@ -41,7 +41,7 @@ Solitaire::CardVector Solitaire::Lane::removeCards(size_t howMany)
     else
     {
         removedCards.clear();
-        TRACELOG(LOG_WARNING, "GAME: You are trying to remove [%d] cards cards from a lane that has currently [%d] playing cards!", howMany, getNumberOfPlayingCards());
+        LOG_WARNING("LANE: You are trying to remove [%d] cards cards from a lane that has currently [%d] playing cards!", howMany, getNumberOfPlayingCards());
     }
 
     return removedCards;
