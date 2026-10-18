@@ -18,6 +18,12 @@ Solitaire::CardPos Solitaire::PlayingCard::getCardPosition() const
     return m_Coordinates;
 }
 
+void Solitaire::PlayingCard::printInfo() const
+{
+    const std::string cardCode = m_Card.getCardCode();
+    LOG_INFO("Card: %s (x: %d, y: %d)", cardCode.c_str(), m_Coordinates.getX(), m_Coordinates.getY());
+}
+
 Solitaire::PlayingCard Solitaire::CardFactory::createPlayingCard(const Card& card, Utils::IVector2 offset)
 {
     return PlayingCard(card.getRank(), card.getSuit(), offset);

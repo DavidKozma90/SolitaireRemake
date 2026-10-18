@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <chrono>
 #include <random>
+#include <functional>
+#include <array>
 #include "Card.h"
 
 namespace Solitaire
@@ -13,12 +15,14 @@ class Deck
 public:
     Deck();
 
-    void create();
-    void shuffle();
+    using ShuffleMethod = std::function<void(CardVector&)>;
+
+    void create(size_t deckNum = 1);
+    void shuffle(ShuffleMethod shuffleMethod = {});
 
     CardVector& getCards();
 
-    Card drawCard();
+    Card drawCardFromTop();
     bool isEmpty() const;
     size_t getSize() const;
 

@@ -1,16 +1,25 @@
 #include "Lane.h"
 #include "LogTrace.h"
 
-Solitaire::Lane::Lane(int laneIndex, int hidden, int playing) : m_laneIndex(laneIndex)
+namespace Solitaire
 {
+
+Lane::Lane(int32_t laneIndex, size_t hidden, size_t playing)
+{
+    this->set(laneIndex, hidden, playing);
+}
+
+void Lane::set(int32_t laneIndex, size_t hidden, size_t playing)
+{
+    m_laneIndex = laneIndex;
     m_hiddenCards.clear();
     m_playingCards.clear();
     m_hiddenCards.reserve(hidden);
     m_playingCards.reserve(playing);
-    m_laneOffset = {Constants::LANE_ORIGIN_X + (laneIndex * Constants::LANE_OFFSET_X), Constants::LANE_ORIGIN_Y};
+    m_laneOffset = {Constants::LANE_ORIGIN_X + (m_laneIndex * Constants::LANE_OFFSET_X), Constants::LANE_ORIGIN_Y};
 }
 
-void Solitaire::Lane::fill(Deck& fromDeck)
+void Lane::fill(Deck& fromDeck)
 {
     CardVector& deckCards = fromDeck.getCards();
     CardVector tempPlayingCards;
@@ -23,13 +32,13 @@ void Solitaire::Lane::fill(Deck& fromDeck)
     insertCardsToLane(tempPlayingCards, 0);
 }
 
-void Solitaire::Lane::insertCards(const CardVector& cardsToInsert)
+void Lane::insertCards(const CardVector& cardsToInsert)
 {
     insertCardsToLane(cardsToInsert, getNumberOfPlayingCards());
 }
 
 
-Solitaire::CardVector Solitaire::Lane::removeCards(size_t howMany)
+CardVector Lane::removeCards(size_t howMany)
 {
     CardVector removedCards;
 
@@ -47,32 +56,32 @@ Solitaire::CardVector Solitaire::Lane::removeCards(size_t howMany)
     return removedCards;
 }
 
-size_t Solitaire::Lane::getNumberOfHiddenCards() const
+size_t Lane::getNumberOfHiddenCards() const
 {
     return m_hiddenCards.size();
 }
 
-size_t Solitaire::Lane::getNumberOfPlayingCards() const
+size_t Lane::getNumberOfPlayingCards() const
 {
     return m_playingCards.size();
 }
 
-Utils::IVector2 Solitaire::Lane::getLaneOffset() const
+Utils::IVector2 Lane::getLaneOffset() const
 {
     return m_laneOffset;
 }
 
-Solitaire::PlayingCardVector& Solitaire::Lane::getAllPlayingCards()
+PlayingCardVector& Lane::getAllPlayingCards()
 {
     return m_playingCards;
 }
 
-const Solitaire::PlayingCardVector& Solitaire::Lane::getAllPlayingCards() const
+const PlayingCardVector& Lane::getAllPlayingCards() const
 {
     return m_playingCards;
 }
 
-void Solitaire::Lane::convertTopHiddenCardToPlayingCard()
+void Lane::convertTopHiddenCardToPlayingCard()
 {
     if(hasHiddenCards() && hasNoPlayingCards())
     {
@@ -84,37 +93,37 @@ void Solitaire::Lane::convertTopHiddenCardToPlayingCard()
     }
 }
 
-bool Solitaire::Lane::isLaneEmpty() const
+bool Lane::isLaneEmpty() const
 {
     return (m_hiddenCards.empty() && m_playingCards.empty());
 }
 
-bool Solitaire::Lane::hasNoPlayingCards() const 
+bool Lane::hasNoPlayingCards() const 
 {
     return m_playingCards.empty();
 }
 
-bool Solitaire::Lane::hasNoHiddenCards() const
+bool Lane::hasNoHiddenCards() const
 {
     return m_hiddenCards.empty();
 }
 
-bool Solitaire::Lane::hasPlayingCards() const
+bool Lane::hasPlayingCards() const
 {
     return (m_playingCards.empty() == false);
 }
 
-bool Solitaire::Lane::hasHiddenCards() const
+bool Lane::hasHiddenCards() const
 {
     return (m_hiddenCards.empty() == false);
 }
 
-int32_t Solitaire::Lane::getLaneIndex() const
+int32_t Lane::getLaneIndex() const
 {
     return m_laneIndex;
 }
 
-int32_t Solitaire::Lane::getLaneIndexFromPosition(int32_t x, int32_t y) const
+int32_t Lane::getLaneIndexFromPosition(int32_t x, int32_t y) const
 {
     int32_t currentLaneIndex = Constants::INVALID_INDEX;
     const int32_t retractedOffsetY = (hasNoPlayingCards()) ? ((hasNoHiddenCards()) ? 0 : Constants::HIDDEN_CARD_OFFSET_Y ) : Constants::LANE_OFFSET_Y;
@@ -128,7 +137,7 @@ int32_t Solitaire::Lane::getLaneIndexFromPosition(int32_t x, int32_t y) const
     return currentLaneIndex;
 }
 
-int32_t Solitaire::Lane::getPlayingCardIndexFromPosition(int32_t x, int32_t y) const
+int32_t Lane::getPlayingCardIndexFromPosition(int32_t x, int32_t y) const
 {
     int32_t currentPlayingCardIndex = Constants::INVALID_INDEX;
 
@@ -151,7 +160,7 @@ int32_t Solitaire::Lane::getPlayingCardIndexFromPosition(int32_t x, int32_t y) c
     return currentPlayingCardIndex;
 }
 
-Rectangle Solitaire::Lane::getPlayingCardArea() const
+Rectangle Lane::getPlayingCardArea() const
 {
     return 
     {
@@ -162,7 +171,7 @@ Rectangle Solitaire::Lane::getPlayingCardArea() const
     };
 }
 
-Rectangle Solitaire::Lane::getMovedPlayingCardArea(int32_t cardIndex) const
+Rectangle Lane::getMovedPlayingCardArea(int32_t cardIndex) const
 {
     return 
     {
@@ -173,7 +182,35 @@ Rectangle Solitaire::Lane::getMovedPlayingCardArea(int32_t cardIndex) const
     };
 }
 
-void Solitaire::Lane::insertCardsToLane(const CardVector& cardsToInsert, int32_t elementOffset)
+void Lane::printInfo() const
+{
+    static int32_t prevLaneIndex = -1;
+
+    if (prevLaneIndex != m_laneIndex)
+    {
+        LOG_INFO("---------------------------");
+        LOG_INFO("LaneIndex: %d", m_laneIndex);
+        LOG_INFO("Hidden Cards (%d):", getNumberOfHiddenCards());
+        
+        for (auto hiddenCard : m_hiddenCards)
+        {
+            const std::string cardCode = hiddenCard.getCardCode();
+            LOG_INFO("Card: %s", cardCode.c_str());
+        }
+
+        LOG_INFO("Playing Cards (%d):", getNumberOfPlayingCards());
+
+        for (auto playingCard : m_playingCards)
+        {
+            playingCard.printInfo();
+        }
+        LOG_INFO("---------------------------");
+    }
+
+    prevLaneIndex = m_laneIndex;
+}
+
+void Lane::insertCardsToLane(const CardVector& cardsToInsert, int32_t elementOffset)
 {
     for(size_t i{}; i < cardsToInsert.size(); ++i)
     {
@@ -181,3 +218,5 @@ void Solitaire::Lane::insertCardsToLane(const CardVector& cardsToInsert, int32_t
         m_playingCards.push_back(CardFactory::createPlayingCard(cardsToInsert[i], { m_laneOffset.x, (m_laneOffset.y + laneElementOffset) }));
     }
 }
+
+} 

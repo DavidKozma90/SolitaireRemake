@@ -27,9 +27,16 @@ void print(Level logType, const char* text, ...);
 
 } // namespace LogTrace
 
-#define LOG_INFO(...)    LogTrace::print(LogTrace::Level::LOG_INFO, __VA_ARGS__)
-#define LOG_WARNING(...) LogTrace::print(LogTrace::Level::LOG_WARNING, __VA_ARGS__)
-#define LOG_ERROR(...)   LogTrace::print(LogTrace::Level::LOG_ERROR, __VA_ARGS__)
-#define LOG_FATAL(...)   LogTrace::print(LogTrace::Level::LOG_FATAL, __VA_ARGS__)
+#ifndef NDEBUG
+    #define LOG_INFO(...)    LogTrace::print(LogTrace::Level::LOG_INFO, __VA_ARGS__)
+    #define LOG_WARNING(...) LogTrace::print(LogTrace::Level::LOG_WARNING, __VA_ARGS__)
+    #define LOG_ERROR(...)   LogTrace::print(LogTrace::Level::LOG_ERROR, __VA_ARGS__)
+    #define LOG_FATAL(...)   LogTrace::print(LogTrace::Level::LOG_FATAL, __VA_ARGS__)
+#else
+    #define LOG_INFO(...)    (static_cast<void>(0))
+    #define LOG_WARNING(...) (static_cast<void>(0))
+    #define LOG_ERROR(...)   (static_cast<void>(0))
+    #define LOG_FATAL(...)   (static_cast<void>(0))
+#endif
 
 #endif

@@ -5,28 +5,50 @@ namespace Solitaire
 
 Deck::Deck()
 {
-    Deck::create();
-    //Deck::shuffle();
-    
+    Deck::create(1);
     deckPos.setOffset({Constants::DECK_ORIGIN_X, Constants::DECK_ORIGIN_Y});
 }
 
-void Deck::create()
+void Deck::create(size_t deckNum)
 {
-    m_Cards.clear();
-    m_Cards.reserve(Constants::NUMBER_OF_CARDS_IN_DECK);
-    for (uint8_t suit = static_cast<uint8_t>(Suit::Hearts); suit <= static_cast<uint8_t>(Suit::Spades); ++suit)
+    constexpr std::array suits
     {
-        for (uint8_t rank = static_cast<uint8_t>(Rank::Ace); rank <= static_cast<uint8_t>(Rank::King); ++rank)
+        Suit::Hearts, Suit::Diamonds, Suit::Clubs, Suit::Spades 
+    };
+
+    constexpr std::array ranks
+    {
+        Rank::Ace, Rank::Two, Rank::Three, Rank::Four, Rank::Five, Rank::Six,
+        Rank::Seven, Rank::Eight, Rank::Nine, Rank::Ten, Rank::Jack, Rank::Queen, Rank::King
+    };
+
+    m_Cards.clear();
+    m_Cards.reserve(deckNum * suits.size() * ranks.size());
+
+    for (size_t n{}; n < deckNum; ++n)
+    {
+        for (const auto suit : suits)
         {
-            m_Cards.emplace_back(static_cast<Rank>(rank), static_cast<Suit>(suit));
+            for (const auto rank : ranks)
+            {
+                m_Cards.emplace_back(rank, suit);
+            }
         }
     }
 }
-void Deck::shuffle()
+
+void Deck::shuffle(ShuffleMethod shuffleMethod)
 {
-    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::shuffle(m_Cards.begin(), m_Cards.end(), std::default_random_engine((uint32_t)seed));
+    if (shuffleMethod)
+    {
+        shuffleMethod(m_Cards);
+    }
+    else
+    {
+        // Default shuffle if non provided
+        auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::shuffle(m_Cards.begin(), m_Cards.end(), std::default_random_engine((uint32_t)seed));
+    }
 }
 
 CardVector& Deck::getCards()
@@ -34,7 +56,7 @@ CardVector& Deck::getCards()
     return m_Cards;
 }
 
-Card Deck::drawCard()
+Card Deck::drawCardFromTop()
 {
     Card card = m_Cards.back();
     m_Cards.pop_back();

@@ -45,9 +45,17 @@ void Solitaire::Game::OnUpdate()
     if((index != Constants::INVALID_INDEX))
     {
         m_SelectedLanePtr = &m_CardLanes[index];
+        m_SelectedLanePtr->printInfo();
     }
 
-    //std::cout << "Lane index: " << m_SelectedLanePtr->getLaneIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) << " Card index: " << m_SelectedLanePtr->getPlayingCardIndexFromPosition(m_CursorPosition.x, m_CursorPosition.y) <<std::endl;
+    static int32_t prevX = -1, prevY = -1;
+    if ((m_CursorPosition.x != prevX) || (m_CursorPosition.y != prevY))
+    {
+        LOG_INFO("X: %d, Y: %d", static_cast<int32_t>(m_CursorPosition.x), static_cast<int32_t>(m_CursorPosition.y));
+    }
+
+    prevX = m_CursorPosition.x;
+    prevY = m_CursorPosition.y;
 
     if(m_IsCursorDown)
     {
@@ -61,7 +69,7 @@ void Solitaire::Game::OnUpdate()
         {
             if(!m_Deck.isEmpty())
             {       
-                m_CardFromDeck.push_back(CardFactory::createPlayingCard(m_Deck.drawCard(), offset));
+                m_CardFromDeck.push_back(CardFactory::createPlayingCard(m_Deck.drawCardFromTop(), offset));
             }
             else
             {

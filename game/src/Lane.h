@@ -12,8 +12,9 @@ class Lane
 {
 public:
     DEFAULT_CTOR(Lane);
-    Lane(int laneIndex, int hidden, int playing);
+    Lane(int32_t laneIndex, size_t hidden, size_t playing);
     void fill(Deck& fromDeck);
+    void set(int32_t laneIndex = 0, size_t hidden = 0, size_t playing = 0);
 
     void insertCards(const CardVector& cardsToInsert);
     CardVector removeCards(size_t howMany);
@@ -37,11 +38,12 @@ public:
     Rectangle getPlayingCardArea() const;
     Rectangle getMovedPlayingCardArea(int32_t cardIndex) const;
 
+    void printInfo() const;
 private:
-    int32_t m_laneIndex = 0;
-    CardVector m_hiddenCards;
-    PlayingCardVector m_playingCards;
-    Utils::IVector2 m_laneOffset = {0, 0};
+    int32_t m_laneIndex{};
+    CardVector m_hiddenCards{};
+    PlayingCardVector m_playingCards{};
+    Utils::IVector2 m_laneOffset{};
 
     void insertCardsToLane(const CardVector& cardsToInsert, int32_t elementOffset);
 };

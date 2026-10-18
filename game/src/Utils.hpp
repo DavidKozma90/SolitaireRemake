@@ -21,6 +21,8 @@ namespace Utils
 
 #define MOVE_DISABLED(ClassName)    ClassName(ClassName&&) noexcept = delete; \
                                     ClassName& operator=(ClassName&&) noexcept = delete;
+
+#define NO_OP (static_cast<void>(0))                                    
 typedef struct IVector2
 {
     int32_t x;

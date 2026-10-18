@@ -2,6 +2,7 @@
 #include <cstdint>
 #include "Card.h"
 #include "CardPos.h"
+#include "LogTrace.h"
 
 namespace Solitaire
 {
@@ -12,6 +13,8 @@ public:
     
     Card getCard() const;
     CardPos getCardPosition() const;
+
+    void printInfo() const;
     
 private:
     Card m_Card;

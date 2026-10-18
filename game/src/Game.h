@@ -8,50 +8,52 @@
 
 namespace Solitaire
 {
-    typedef std::array<Lane, Constants::MAX_NUMBER_OF_LANES> LaneArray;
 
-    enum class GameState
-    {
-        IDLE,
-        SELECTING,
-        MOVING,
-        PLACING
-    };
+using LaneArray = std::array<Lane, Constants::MAX_NUMBER_OF_LANES>;
 
-    class Game
-    {
-    public:
-        Game();
-        ~Game();
+enum class GameState
+{
+    IDLE,
+    SELECTING,
+    MOVING,
+    PLACING
+};
 
-        void OnInput();
-        void OnUpdate();
-        void OnRender();
-        void Run();
+class Game
+{
+public:
+    Game();
+    ~Game();
 
-    private:
-        LaneArray m_CardLanes;
-        Deck m_Deck;
-        Renderer m_Renderer;
-        PlayingCardVector m_CardFromDeck;
-        CardVector m_Temp;
-        DeckBackgroundColor m_BackgroundColor = DeckBackgroundColor::Red;
-        Lane* m_SelectedLanePtr = nullptr;
-        PlayingCardVector m_SelectedCards;
-        GameState m_CurrentGameState = GameState::IDLE;
+    void OnInput();
+    void OnUpdate();
+    void OnRender();
+    void Run();
 
-        Vector2 m_CursorPosition = {0, 0};
-        bool m_IsCursorPressed = false;
-        bool m_IsAddingCardsButtonPressed = false;
-        bool m_IsRemovingCardsButtonPressed = false;
-        bool m_IsConvertingCardsButtonPressed = false;
-        bool m_IsCursorDown = false;
-        bool m_IsCursorUp = false;
+private:
+    LaneArray m_CardLanes;
+    Deck m_Deck;
+    Renderer m_Renderer;
+    PlayingCardVector m_CardFromDeck;
+    CardVector m_Temp;
+    DeckBackgroundColor m_BackgroundColor = DeckBackgroundColor::Red;
+    Lane* m_SelectedLanePtr = nullptr;
+    PlayingCardVector m_SelectedCards;
+    GameState m_CurrentGameState = GameState::IDLE;
 
-        DeckBackgroundColor getBackgroundColorFromInput(int pressedKey) const;
-        int laneSelectorFromPosition(int x, int y) const;
-        void selectCardsFromLane();
+    Vector2 m_CursorPosition = {0, 0};
+    bool m_IsCursorPressed = false;
+    bool m_IsAddingCardsButtonPressed = false;
+    bool m_IsRemovingCardsButtonPressed = false;
+    bool m_IsConvertingCardsButtonPressed = false;
+    bool m_IsCursorDown = false;
+    bool m_IsCursorUp = false;
 
-        bool m_IsRunning = true;
-    };
+    DeckBackgroundColor getBackgroundColorFromInput(int pressedKey) const;
+    int laneSelectorFromPosition(int x, int y) const;
+    void selectCardsFromLane();
+
+    bool m_IsRunning = true;
+};
+
 }

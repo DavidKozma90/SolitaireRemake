@@ -22,6 +22,8 @@ public:
     
     Rank getRank() const;
     Suit getSuit() const;
+
+    std::string getCardCode() const;
 private:
     Rank m_rank;
     Suit m_suit;
